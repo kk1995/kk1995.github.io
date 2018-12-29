@@ -1,0 +1,118 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of iteratePCALoadFile</title>
+  <meta name="keywords" content="iteratePCALoadFile">
+  <meta name="description" content="iteratePCA Summary of this function goes here">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">BauerLab</a> &gt; <a href="#">MATLAB</a> &gt; <a href="#">lib</a> &gt; <a href="#">+mouse</a> &gt; <a href="index.html">+expSpecific</a> &gt; iteratePCALoadFile.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for BauerLab\MATLAB\lib\+mouse\+expSpecific&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>iteratePCALoadFile
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>iteratePCA Summary of this function goes here</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>function [nullExplained,orderMat] = iteratePCALoadFile(dataFile,iterNum) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">iteratePCA Summary of this function goes here
+   Detailed explanation goes here</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [nullExplained,orderMat] = iteratePCALoadFile(dataFile,iterNum)</a>
+0002 <span class="comment">%iteratePCA Summary of this function goes here</span>
+0003 <span class="comment">%   Detailed explanation goes here</span>
+0004 
+0005 data1 = [];
+0006 data2 = [];
+0007 
+0008 <span class="keyword">if</span> iscell(dataFile)
+0009     <span class="keyword">for</span> i = 1:numel(dataFile)
+0010         
+0011         load(dataFile{i});
+0012         
+0013         data1 = cat(3,data1,single(Veh_PT_mouse));
+0014         data2 = cat(3,data2,single(MTEP_PT_mouse));
+0015         
+0016     <span class="keyword">end</span>
+0017 <span class="keyword">else</span>
+0018     load(dataFile);
+0019     data1 = single(Veh_PT);
+0020     data2 = single(MTEP_PT);
+0021 <span class="keyword">end</span>
+0022 
+0023 disp(<span class="string">'data loaded'</span>);
+0024 
+0025 itep = logical(diag(ones(size(data1,1),1)));
+0026 itep1 = repmat(itep,[1 1 size(data1,3)]);
+0027 itep2 = repmat(itep,[1 1 size(data2,3)]);
+0028 data1(logical(itep1)) = 0;
+0029 data2(logical(itep2)) = 0;
+0030 
+0031 disp(<span class="string">'data preprocessed'</span>);
+0032 
+0033 <span class="comment">%% find number of mice in each group</span>
+0034 
+0035 numComponents = 20;
+0036 sampleSize1 = size(data1,3);
+0037 sampleSize2 = size(data2,3);
+0038 
+0039 <span class="comment">%% initialize the threshold matrix</span>
+0040 
+0041 nullExplained = nan(numComponents,iterNum);
+0042 orderMat = nan(sampleSize1+sampleSize2,iterNum);
+0043 
+0044 
+0045 <span class="comment">%% iterations</span>
+0046 
+0047 <span class="comment">% pool data</span>
+0048 dataPool = cat(3,data1,data2);
+0049 clear data1
+0050 clear data2
+0051 
+0052 disp(<span class="string">'data pooled'</span>);
+0053 
+0054 parfor iter = 1:iterNum
+0055     disp([<span class="string">'run: '</span> num2str(iter)]);
+0056     t0 = tic;
+0057     <span class="comment">% shuffle</span>
+0058     order = randperm(sampleSize1+sampleSize2);
+0059     orderMat(:,iter) = order;
+0060     diffData = mean(dataPool(:,:,order(sampleSize1+1:sampleSize1+sampleSize2)),3)<span class="keyword">...</span>
+0061         - mean(dataPool(:,:,order(1:sampleSize1)),3);
+0062     [a,b,c,d,explained] = pca(diffData);
+0063     nullExplained(:,iter) = explained(1:numComponents);
+0064     t0 = toc(t0);
+0065     disp(num2str(t0));
+0066 <span class="keyword">end</span>
+0067 
+0068 
+0069 <span class="keyword">end</span>
+0070</pre></div>
+<hr><address>Generated on Fri 28-Dec-2018 21:42:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

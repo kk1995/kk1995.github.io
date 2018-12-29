@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of extractSymMat</title>
+  <meta name="keywords" content="extractSymMat">
+  <meta name="description" content="extractSymMat Extracts the unique part of a symmetric matrix">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">BauerLab</a> &gt; <a href="#">MATLAB</a> &gt; <a href="#">lib</a> &gt; <a href="#">+mouse</a> &gt; <a href="index.html">+conn</a> &gt; extractSymMat.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for BauerLab\MATLAB\lib\+mouse\+conn&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>extractSymMat
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>extractSymMat Extracts the unique part of a symmetric matrix</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>function [extractedData,diagonalData] = extractSymMat(matrix) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">extractSymMat Extracts the unique part of a symmetric matrix
+   If the matrix is more than 2D, then the first two dimensions are
+   considered for symmetry.
+   Input: matrix = nD array
+   Output:
+       extractedData = (n-1)D array. Does not include the diagonal aspect.
+       diagonalData = (n-1)D array</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [extractedData,diagonalData] = extractSymMat(matrix)</a>
+0002 <span class="comment">%extractSymMat Extracts the unique part of a symmetric matrix</span>
+0003 <span class="comment">%   If the matrix is more than 2D, then the first two dimensions are</span>
+0004 <span class="comment">%   considered for symmetry.</span>
+0005 <span class="comment">%   Input: matrix = nD array</span>
+0006 <span class="comment">%   Output:</span>
+0007 <span class="comment">%       extractedData = (n-1)D array. Does not include the diagonal aspect.</span>
+0008 <span class="comment">%       diagonalData = (n-1)D array</span>
+0009 
+0010 inputSize = size(matrix);
+0011 numel2Dim = prod(inputSize(1:2));
+0012 reshapedInput = reshape(matrix,numel2Dim,[]);
+0013 
+0014 <span class="comment">% of the first 2 dim, the indices pertaining to the unique triangle</span>
+0015 triangularInd = mod(0:numel2Dim-1,inputSize(1))+1 &gt; ceil((1:numel2Dim)/inputSize(1));
+0016 triangularInd = find(triangularInd);
+0017 
+0018 diagonalInd = 1:inputSize(1):numel2Dim;
+0019 
+0020 extractedData = nan(numel(triangularInd),prod(inputSize(3:end)));
+0021 diagonalData = nan(numel(diagonalInd),prod(inputSize(3:end)));
+0022 <span class="keyword">for</span> i = 1:size(extractedData,2)
+0023     extractedData(:,i) = reshapedInput(triangularInd,i);
+0024     diagonalData(:,i) = reshapedInput(diagonalInd,i);
+0025 <span class="keyword">end</span>
+0026 <span class="keyword">if</span> numel(inputSize) &gt; 2
+0027     extractedData = reshape(extractedData,[numel(triangularInd) inputSize(3:end)]);
+0028     diagonalData = reshape(diagonalData,[numel(diagonalInd) inputSize(3:end)]);
+0029 <span class="keyword">end</span>
+0030 
+0031 <span class="keyword">end</span>
+0032</pre></div>
+<hr><address>Generated on Fri 28-Dec-2018 21:42:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

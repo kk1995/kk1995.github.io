@@ -1,0 +1,123 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of selectWithEdges</title>
+  <meta name="keywords" content="selectWithEdges">
+  <meta name="description" content="selectWithEdges Select a portion of the data with edges. Getting edges is">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">BauerLab</a> &gt; <a href="#">MATLAB</a> &gt; <a href="#">lib</a> &gt; <a href="#">+mouse</a> &gt; <a href="index.html">+freq</a> &gt; selectWithEdges.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for BauerLab\MATLAB\lib\+mouse\+freq&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>selectWithEdges
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>selectWithEdges Select a portion of the data with edges. Getting edges is</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>function [selectedData, realInd, hasFalse] = selectWithEdges(data,ind,edgeLength) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">selectWithEdges Select a portion of the data with edges. Getting edges is
+important in removing edge effects for wavelet analysis. You need to know
+the length of data to add to edge. Run &quot;makeGabor&quot; function and see how
+long the wavelet is. edgeLength should be half of that rounded up.
+Inputs:
+   data = the actual data
+   ind = two numbers. Where selection starts and ends
+   edgeLength = the number of data points in edges
+Outputs:
+   selectedData = the selected time series data
+   realInd = two numbers. Index of where the real data (not edges) start
+   and end
+   hasFalse = does the selectedData have any false data made by flipping
+   the real data to create edges?</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [selectedData, realInd, hasFalse] = selectWithEdges(data,ind,edgeLength)</a>
+0002 <span class="comment">%selectWithEdges Select a portion of the data with edges. Getting edges is</span>
+0003 <span class="comment">%important in removing edge effects for wavelet analysis. You need to know</span>
+0004 <span class="comment">%the length of data to add to edge. Run &quot;makeGabor&quot; function and see how</span>
+0005 <span class="comment">%long the wavelet is. edgeLength should be half of that rounded up.</span>
+0006 <span class="comment">%Inputs:</span>
+0007 <span class="comment">%   data = the actual data</span>
+0008 <span class="comment">%   ind = two numbers. Where selection starts and ends</span>
+0009 <span class="comment">%   edgeLength = the number of data points in edges</span>
+0010 <span class="comment">%Outputs:</span>
+0011 <span class="comment">%   selectedData = the selected time series data</span>
+0012 <span class="comment">%   realInd = two numbers. Index of where the real data (not edges) start</span>
+0013 <span class="comment">%   and end</span>
+0014 <span class="comment">%   hasFalse = does the selectedData have any false data made by flipping</span>
+0015 <span class="comment">%   the real data to create edges?</span>
+0016 
+0017 <span class="keyword">if</span> edgeLength &gt; numel(data)
+0018     error(<span class="string">'The length of edge is too long.'</span>);
+0019 <span class="keyword">end</span>
+0020 <span class="keyword">if</span> sum(size(data) == 1) == 0
+0021     error(<span class="string">'data input needs to be a row or column vector'</span>);
+0022 <span class="keyword">end</span>
+0023 
+0024 <span class="keyword">if</span> size(data,1) ~= 1
+0025     data = data';
+0026 <span class="keyword">end</span>
+0027 
+0028 realData = data(ind(1):ind(2));
+0029 
+0030 <span class="comment">% see how much data is missing on left end that needs to be created</span>
+0031 leftFalseLen = edgeLength - (ind(1) - 1);
+0032 <span class="comment">% see how much data is missing on left end that needs to be created</span>
+0033 rightFalseLen = edgeLength - (numel(data) - ind(2));
+0034 
+0035 <span class="comment">% make boolean indicating whether false data was created.</span>
+0036 <span class="keyword">if</span> leftFalseLen &gt; 0 || rightFalseLen &gt; 0
+0037     hasFalse = true;
+0038 <span class="keyword">else</span>
+0039     hasFalse = false;
+0040 <span class="keyword">end</span>
+0041 
+0042 <span class="comment">% get left edge</span>
+0043 <span class="keyword">if</span> leftFalseLen &lt;= 0
+0044     leftEdge = data(ind(1)-edgeLength:ind(1)-1);
+0045 <span class="keyword">else</span>
+0046     leftEdge = data(1:ind(1)-1);
+0047     falseLeftEdge = data(leftFalseLen:-1:1);
+0048     leftEdge = [falseLeftEdge  leftEdge];
+0049 <span class="keyword">end</span>
+0050 
+0051 <span class="comment">% get right edge</span>
+0052 <span class="keyword">if</span> rightFalseLen &lt;= 0
+0053     rightEdge = data(ind(2)+1:ind(2)+edgeLength);
+0054 <span class="keyword">else</span>
+0055     rightEdge = data(ind(2)+1:numel(data));
+0056     falseRightEdge = data(numel(data):-1:numel(data)-rightFalseLen+1);
+0057     rightEdge = [rightEdge falseRightEdge];
+0058 <span class="keyword">end</span>
+0059 
+0060 selectedData = [leftEdge realData rightEdge];
+0061 realInd = [numel(leftEdge)+1 numel(leftEdge)+numel(realData)];
+0062 <span class="keyword">end</span>
+0063</pre></div>
+<hr><address>Generated on Fri 28-Dec-2018 21:42:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

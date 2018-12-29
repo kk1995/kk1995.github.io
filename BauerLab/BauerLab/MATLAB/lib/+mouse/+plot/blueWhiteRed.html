@@ -1,0 +1,106 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of blueWhiteRed</title>
+  <meta name="keywords" content="blueWhiteRed">
+  <meta name="description" content="blueWhiteRed Makes custom color map that goes from blue to white to red">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">BauerLab</a> &gt; <a href="#">MATLAB</a> &gt; <a href="#">lib</a> &gt; <a href="#">+mouse</a> &gt; <a href="index.html">+plot</a> &gt; blueWhiteRed.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for BauerLab\MATLAB\lib\+mouse\+plot&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>blueWhiteRed
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>blueWhiteRed Makes custom color map that goes from blue to white to red</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>function customMap = blueWhiteRed(varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">blueWhiteRed Makes custom color map that goes from blue to white to red
+   Input:
+       dataNum (optional) = number of data points (default = 100)
+       ratio (optional) = ratio of blue to red (2 numbers) (default = [0.5
+       0.5])
+       flip (optional) = whether to flip blue and red (default = false)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+<li><a href="imagesc2Vid.html" class="code" title="function imagesc2Vid(matrix,fR,lim,varargin)">imagesc2Vid</a>	imagesc2Vid Converts 3D matrix for imagesc to video</li><li><a href="sigImagesc.html" class="code" title="function ax = sigImagesc(ax,data1,data2,labels,cLim)">sigImagesc</a>	UNTITLED4 Summary of this function goes here</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function customMap = blueWhiteRed(varargin)</a>
+0002 <span class="comment">%blueWhiteRed Makes custom color map that goes from blue to white to red</span>
+0003 <span class="comment">%   Input:</span>
+0004 <span class="comment">%       dataNum (optional) = number of data points (default = 100)</span>
+0005 <span class="comment">%       ratio (optional) = ratio of blue to red (2 numbers) (default = [0.5</span>
+0006 <span class="comment">%       0.5])</span>
+0007 <span class="comment">%       flip (optional) = whether to flip blue and red (default = false)</span>
+0008 
+0009 <span class="keyword">if</span> nargin &lt; 1
+0010     dataNum = 10;
+0011 <span class="keyword">else</span>
+0012     dataNum = varargin{1};
+0013 <span class="keyword">end</span>
+0014 
+0015 <span class="keyword">if</span> nargin &lt; 2
+0016     ratio = [0.5 0.5];
+0017 <span class="keyword">else</span>
+0018     ratio = varargin{2};
+0019 <span class="keyword">end</span>
+0020 
+0021 <span class="keyword">if</span> nargin &lt; 3
+0022     flip = false;
+0023 <span class="keyword">else</span>
+0024     flip = varargin{3};
+0025 <span class="keyword">end</span>
+0026 
+0027 <span class="comment">% normalize ratio</span>
+0028 ratio = ratio./sum(ratio);
+0029 
+0030 bottomNum = round(ratio(1)*dataNum);
+0031 topNum = round(ratio(2)*dataNum);
+0032 
+0033 color = [1 0 0; 0 0 1];
+0034 colorInd = [1 2];
+0035 
+0036 topColor = color(colorInd(1),:);         <span class="comment">% color for maximum data value (red = [1 0 0])</span>
+0037 indexColor = [1 1 1];       <span class="comment">% color for indexed data value (white = [1 1 1])</span>
+0038 bottomcolor = color(colorInd(2),:);      <span class="comment">% color for minimum data value (blue = [0 0 1])</span>
+0039 
+0040 customMap1 = [linspace(bottomcolor(1),indexColor(1),bottomNum);<span class="keyword">...</span>
+0041     linspace(bottomcolor(2),indexColor(2),bottomNum);<span class="keyword">...</span>
+0042     linspace(bottomcolor(3),indexColor(3),bottomNum)];
+0043 customMap2 = [linspace(indexColor(1),topColor(1),topNum);<span class="keyword">...</span>
+0044     linspace(indexColor(2),topColor(2),topNum);<span class="keyword">...</span>
+0045     linspace(indexColor(3),topColor(3),topNum)];
+0046 customMap = [customMap1 indexColor' customMap2];
+0047 
+0048 <span class="keyword">if</span> flip
+0049     customMap = fliplr(customMap);
+0050 <span class="keyword">end</span>
+0051 
+0052 customMap = customMap';
+0053 <span class="keyword">end</span>
+0054</pre></div>
+<hr><address>Generated on Fri 28-Dec-2018 21:42:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of bilateralFC</title>
+  <meta name="keywords" content="bilateralFC">
+  <meta name="description" content="regionalFC finds the connectivity of the ROI with the rest">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">BauerLab</a> &gt; <a href="#">MATLAB</a> &gt; <a href="#">lib</a> &gt; <a href="#">+mouse</a> &gt; <a href="index.html">+conn</a> &gt; bilateralFC.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for BauerLab\MATLAB\lib\+mouse\+conn&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>bilateralFC
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>regionalFC finds the connectivity of the ROI with the rest</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>function fcData = bilateralFC(data) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> regionalFC finds the connectivity of the ROI with the rest
+   inputs:
+       data = 3D matrix. (spatial x spatial x time)
+   output:
+       fcData = 2D (spatial x spatial)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function fcData = bilateralFC(data)</a>
+0002 <span class="comment">% regionalFC finds the connectivity of the ROI with the rest</span>
+0003 <span class="comment">%   inputs:</span>
+0004 <span class="comment">%       data = 3D matrix. (spatial x spatial x time)</span>
+0005 <span class="comment">%   output:</span>
+0006 <span class="comment">%       fcData = 2D (spatial x spatial)</span>
+0007 
+0008 spatialDim = size(data); spatialDim = spatialDim(1:2);
+0009 
+0010 colMiddle = floor(spatialDim(2)/2);
+0011 fcData = nan(spatialDim);
+0012 <span class="keyword">for</span> pixRow = 1:spatialDim(1) <span class="comment">% for each pixel</span>
+0013     <span class="keyword">for</span> pixCol = 1:spatialDim(2)
+0014         pixColOpposite = spatialDim(2) - pixCol + 1;
+0015         <span class="keyword">if</span> pixCol &lt;= colMiddle
+0016             data1 = squeeze(data(pixRow,pixCol,:));
+0017             data2 = squeeze(data(pixRow,pixColOpposite,:));
+0018             fcData(pixRow,pixCol) = corr(data1,data2);
+0019             
+0020         <span class="keyword">else</span> <span class="comment">% upper triangle</span>
+0021             fcData(pixRow,pixCol) = fcData(pixRow,pixColOpposite);
+0022         <span class="keyword">end</span>
+0023     <span class="keyword">end</span>
+0024 <span class="keyword">end</span>
+0025 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Fri 28-Dec-2018 21:42:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

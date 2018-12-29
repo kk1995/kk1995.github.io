@@ -1,0 +1,386 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of OISQC</title>
+  <meta name="keywords" content="OISQC">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">BauerLab</a> &gt; <a href="#">MATLAB</a> &gt; <a href="#">lib</a> &gt; <a href="#">+mouse</a> &gt; <a href="index.html">+expSpecific</a> &gt; OISQC.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for BauerLab\MATLAB\lib\+mouse\+expSpecific&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>OISQC
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>function OISQC(rawdata,datahb,isbrain, info, system, suffix) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function OISQC(rawdata,datahb,isbrain, info, system, suffix)</a>
+0002 ibi=find(isbrain==1);
+0003 [~, ~, L]=size(rawdata);
+0004 
+0005 R=mod(L,info.numled);
+0006 <span class="keyword">if</span> R~=0
+0007     rawdata=rawdata(:,:,1:(L-R));
+0008     disp([<span class="string">'** '</span>,num2str(info.numled-R),<span class="string">' frames were dropped **'</span>])
+0009     info.framesdropped=info.numled-R;
+0010 <span class="keyword">end</span>
+0011 
+0012 rawdata=reshape(rawdata,info.nVy,info.nVx,info.numled,[]);
+0013 rawdata=rawdata(:,:,:,2:end); <span class="comment">% cut off bad first set of framesraw</span>
+0014 
+0015 info.T1=size(rawdata,4);
+0016 
+0017 testpixel=squeeze(rawdata(31,82,:,:));
+0018 
+0019 <span class="keyword">if</span> any(any(testpixel==0))
+0020     emptyframes=zeros(size(testpixel));
+0021     <span class="keyword">for</span> c=1:info.numled;
+0022         emptyframes(c,:)=any(testpixel(c,:)==0,1);
+0023     <span class="keyword">end</span>
+0024     disp([filename,num2str(run),<span class="string">' had empty frames, no QC performed, moving on...'</span>])
+0025     info.emptyframes=emptyframes;
+0026     save([directory, filename,num2str(run),<span class="string">'-datahb'</span>],<span class="string">'info'</span>, <span class="string">'-append'</span>);
+0027 <span class="keyword">end</span>
+0028 
+0029 rawdata=single(reshape(rawdata,info.nVy*info.nVx,info.numled,[]));
+0030 
+0031 clear mdatanorm stddatanorm
+0032 mdata=squeeze(mean(rawdata(ibi,:,:),1));
+0033 
+0034 <span class="keyword">for</span> c=1:info.numled;
+0035     mdatanorm(c,:)=mdata(c,:)./(squeeze(mean(mdata(c,:),2)));
+0036 <span class="keyword">end</span>
+0037 
+0038 <span class="keyword">for</span> c=1:info.numled;
+0039     stddatanorm(c,:)=std(mdatanorm(c,:),0,2);
+0040 <span class="keyword">end</span>
+0041 
+0042 time=linspace(1,info.T1,info.T1)/info.framerate;
+0043 
+0044 fhraw=figure(<span class="string">'Units'</span>,<span class="string">'inches'</span>,<span class="string">'Position'</span>,[7 3 10 7], <span class="string">'PaperPositionMode'</span>,<span class="string">'auto'</span>,<span class="string">'PaperOrientation'</span>,<span class="string">'Landscape'</span>);
+0045 set(fhraw,<span class="string">'Units'</span>,<span class="string">'normalized'</span>);
+0046 
+0047 plotedit on
+0048 
+0049 <span class="comment">%% Plot Raw Data</span>
+0050 <span class="keyword">if</span> strcmp(system, <span class="string">'fcOIS1'</span>)
+0051     Colors=[1 0 0; 1 0.5 0; 1 1 0; 0 0 1];
+0052     TickLabels={<span class="string">'R'</span>, <span class="string">'O'</span>, <span class="string">'Y'</span>, <span class="string">'B'</span>};
+0053 <span class="keyword">elseif</span> strcmp(system, <span class="string">'fcOIS2'</span>)
+0054     Colors=[0 0 1; 0 1 0; 1 1 0; 1 0 0];
+0055     TickLabels={<span class="string">'B'</span>, <span class="string">'G'</span>, <span class="string">'Y'</span>, <span class="string">'R'</span>};
+0056     
+0057 <span class="keyword">elseif</span> strcmp(system, <span class="string">'EastOIS1'</span>)
+0058     Colors=[0 0 1; 1 1 0; 1 0.5 0; 1 0 0];
+0059     TickLabels={<span class="string">'B'</span>, <span class="string">'Y'</span>, <span class="string">'O'</span>, <span class="string">'R'</span>};
+0060 <span class="keyword">end</span>
+0061 
+0062 subplot(<span class="string">'position'</span>, [0.12 0.71 0.17 0.2])
+0063 p=plot(time,mdata'); title(<span class="string">'Raw Data'</span>);
+0064 <span class="keyword">for</span> c=1:info.numled;
+0065     set(p(c),<span class="string">'Color'</span>,Colors(c,:));
+0066 <span class="keyword">end</span>
+0067 title(<span class="string">'Raw Data'</span>);
+0068 xlabel(<span class="string">'Time (sec)'</span>)
+0069 ylabel(<span class="string">'Counts'</span>);
+0070 ylim([2000 10000])
+0071 xlim([time(1) time(end)])
+0072 
+0073 subplot(<span class="string">'position'</span>, [0.35 0.71 0.17 0.2])
+0074 p=plot(time,mdatanorm'); title(<span class="string">'Normalized Raw Data'</span>);
+0075 <span class="keyword">for</span> c=1:info.numled;
+0076     set(p(c),<span class="string">'Color'</span>,Colors(c,:));
+0077 <span class="keyword">end</span>
+0078 xlabel(<span class="string">'Time (sec)'</span>)
+0079 ylabel(<span class="string">'Mean Counts'</span>)
+0080 ylim([0.95 1.05])
+0081 xlim([time(1) time(end)])
+0082 
+0083 subplot(<span class="string">'position'</span>, [0.6 0.71 0.1 0.2])
+0084 plot(stddatanorm*100');
+0085 set(gca,<span class="string">'XTick'</span>,(1:info.numled));
+0086 set(gca,<span class="string">'XTickLabel'</span>,TickLabels)
+0087 title(<span class="string">'Std Deviation'</span>);
+0088 ylabel(<span class="string">'% Deviation'</span>)
+0089 
+0090 <span class="comment">%% FFT Check</span>
+0091 fdata=abs(fft(logmean(mdata),[],2));
+0092 hz=linspace(0,info.framerate,info.T1);
+0093 subplot(<span class="string">'position'</span>, [0.77 0.71 0.2 0.2])
+0094 p=loglog(hz(1:ceil(info.T1/2)),fdata(:,1:ceil(info.T1/2))'); title(<span class="string">'FFT Raw Data'</span>);
+0095 <span class="keyword">for</span> c=1:info.numled;
+0096     set(p(c),<span class="string">'Color'</span>,Colors(c,:));
+0097 <span class="keyword">end</span>
+0098 xlabel(<span class="string">'Frequency (Hz)'</span>)
+0099 ylabel(<span class="string">'Magnitude'</span>)
+0100 xlim([0.01 15]);
+0101 
+0102 <span class="comment">%% Movement Check</span>
+0103 rawdata=reshape(rawdata, info.nVy, info.nVx,info.numled, []);
+0104 
+0105 <span class="keyword">if</span> strcmp(system, <span class="string">'fcOIS1'</span>)
+0106     BlueChan=4;
+0107 <span class="keyword">elseif</span> strcmp(system, <span class="string">'fcOIS2'</span>)||strcmp(system, <span class="string">'EastOIS1'</span>)
+0108     BlueChan=1;
+0109 <span class="keyword">end</span>
+0110 
+0111 Im1=single(squeeze(rawdata(:,:,BlueChan,1)));
+0112 F1 = fft2(Im1); <span class="comment">% reference image</span>
+0113 
+0114 InstMvMt=zeros(size(rawdata,4),1);
+0115 LTMvMt=zeros(size(rawdata,4),1);
+0116 Shift=zeros(2,size(rawdata,4),1);
+0117 
+0118 <span class="keyword">for</span> t=1:size(rawdata,4)-1;
+0119     LTMvMt(t)=sum(sum(abs(squeeze(rawdata(:,:,BlueChan,t+1))-Im1)));
+0120     InstMvMt(t)=sum(sum(abs(squeeze(rawdata(:,:,BlueChan,t+1))-squeeze(rawdata(:,:,BlueChan,t)))));
+0121 <span class="keyword">end</span>
+0122 
+0123 <span class="keyword">for</span> t=1:size(rawdata,4);
+0124     Im2=single(squeeze(rawdata(:,:,BlueChan,t)));
+0125     F2 = fft2(Im2); <span class="comment">% subsequent image to translate</span>
+0126     
+0127     pdm = exp(1i.*(angle(F1)-angle(F2))); <span class="comment">% Create phase difference matrix</span>
+0128     pcf = real(ifft2(pdm)); <span class="comment">% Solve for phase correlation function</span>
+0129     pcf2(1:size(Im1,1)/2,1:size(Im1,1)/2)=pcf(size(Im1,1)/2+1:size(Im1,1),size(Im1,1)/2+1:size(Im1,1)); <span class="comment">% 4</span>
+0130     pcf2(size(Im1,1)/2+1:size(Im1,1),size(Im1,1)/2+1:size(Im1,1))=pcf(1:size(Im1,1)/2,1:size(Im1,1)/2); <span class="comment">% 1</span>
+0131     pcf2(1:size(Im1,1)/2,size(Im1,1)/2+1:size(Im1,1))=pcf(size(Im1,1)/2+1:size(Im1,1),1:size(Im1,1)/2); <span class="comment">% 3</span>
+0132     pcf2(size(Im1,1)/2+1:size(Im1,1),1:size(Im1,1)/2)=pcf(1:size(Im1,1)/2,size(Im1,1)/2+1:size(Im1,1)); <span class="comment">% 2</span>
+0133     
+0134     [~, imax] = max(pcf2(:));
+0135     [ypeak, xpeak] = ind2sub(size(Im1,1),imax(1));
+0136     offset = [ypeak-(size(Im1,1)/2+1) xpeak-(size(Im1,2)/2+1)];
+0137     
+0138     Shift(1,t)=offset(1);
+0139     Shift(2,t)=offset(2);
+0140     
+0141 <span class="keyword">end</span>
+0142 
+0143 clear rawdata
+0144 datahb=real(datahb);
+0145 gsrData=gsr(datahb,isbrain);
+0146 Oxy = squeeze(gsrData(:,:,1,:));
+0147 DeOxy = squeeze(gsrData(:,:,2,:));
+0148 
+0149 <span class="comment">%% Check Evoked Responses</span>
+0150 
+0151 <span class="keyword">if</span> strcmp(suffix, <span class="string">'stim'</span>)
+0152     
+0153     R=mod(size(Oxy,3),info.stimblocksize);
+0154     <span class="keyword">if</span> R~=0
+0155         pad=info.stimblocksize-R;
+0156         disp([<span class="string">'** Non integer number of blocks presented. Padded '</span> filename, num2str(run), <span class="string">' with '</span>, num2str(pad), <span class="string">' zeros **'</span>])
+0157         Oxy(:,:,end:end+pad)=0;
+0158         DeOxy(:,:,end:end+pad)=0;
+0159         info.appendedzeros=pad;
+0160     <span class="keyword">end</span>
+0161     
+0162     Oxy=reshape(Oxy,info.nVy,info.nVx,info.stimblocksize,[]);
+0163     
+0164     <span class="keyword">for</span> b=1:size(Oxy,4)
+0165         MeanFrame=squeeze(mean(Oxy(:,:,1:info.stimbaseline,b),3));
+0166         <span class="keyword">for</span> t=1:size(Oxy, 3);
+0167             Oxy(:,:,t,b)=squeeze(Oxy(:,:,t,b))-MeanFrame;
+0168         <span class="keyword">end</span>
+0169     <span class="keyword">end</span>
+0170     
+0171     DeOxy=reshape(DeOxy,info.nVy,info.nVx,info.stimblocksize,[]);
+0172     <span class="keyword">for</span> b=1:size(DeOxy,4)
+0173         MeanFrame=squeeze(mean(DeOxy(:,:,1:info.stimbaseline,b),3));
+0174         <span class="keyword">for</span> t=1:size(DeOxy, 3);
+0175             DeOxy(:,:,t,b)=squeeze(DeOxy(:,:,t,b))-MeanFrame;
+0176         <span class="keyword">end</span>
+0177     <span class="keyword">end</span>
+0178     
+0179     AvgOxy=mean(Oxy,4);
+0180     AvgDeOxy=mean(DeOxy,4);
+0181     AvgTotal=mean(Oxy+DeOxy,4);
+0182     
+0183     MeanFrame=squeeze(mean(AvgOxy(:,:,1:info.stimbaseline),3));
+0184     <span class="keyword">for</span> t=1:size(AvgOxy, 3);
+0185         AvgOxy(:,:,t)=squeeze(AvgOxy(:,:,t))-MeanFrame;
+0186     <span class="keyword">end</span>
+0187     
+0188     MeanFrame=squeeze(mean(AvgDeOxy(:,:,1:info.stimbaseline),3));
+0189     <span class="keyword">for</span> t=1:size(AvgDeOxy, 3);
+0190         AvgDeOxy(:,:,t)=squeeze(AvgDeOxy(:,:,t))-MeanFrame;
+0191     <span class="keyword">end</span>
+0192     
+0193     MeanFrame=squeeze(mean(AvgTotal(:,:,1:info.stimbaseline),3));
+0194     <span class="keyword">for</span> t=1:size(AvgTotal, 3);
+0195         AvgTotal(:,:,t)=squeeze(AvgTotal(:,:,t))-MeanFrame;
+0196     <span class="keyword">end</span>
+0197     
+0198     <span class="comment">%% Make Plots</span>
+0199     
+0200     <span class="keyword">for</span> b=1:size(Oxy,4);
+0201         subplot(<span class="string">'position'</span>, [0.03+(b-1)*0.095 0.5 0.095 0.095]);
+0202         imagesc(Oxy(:,:,info.stimbaseline+info.stimduration,b), [-1e-3 1e-3]);
+0203         axis image;
+0204         set(gca, <span class="string">'XTick'</span>, []);
+0205         set(gca, <span class="string">'YTick'</span>, []);
+0206         <span class="keyword">if</span> b==1
+0207             ylabel(<span class="string">'Oxy'</span>)
+0208         <span class="keyword">end</span>
+0209         title([<span class="string">'Pres '</span>, num2str(b)]);
+0210     <span class="keyword">end</span>
+0211     
+0212     <span class="keyword">for</span> b=1:size(DeOxy,4);
+0213         subplot(<span class="string">'position'</span>, [0.03+(b-1)*0.095 0.35 0.095 0.095]);
+0214         imagesc(DeOxy(:,:,info.stimbaseline+info.stimduration,b), [-1e-3 1e-3]);
+0215         axis image;
+0216         set(gca, <span class="string">'XTick'</span>, []);
+0217         set(gca, <span class="string">'YTick'</span>, []);
+0218         <span class="keyword">if</span> b==1
+0219             ylabel(<span class="string">'DeOxy'</span>)
+0220         <span class="keyword">end</span>
+0221         title([<span class="string">'Pres '</span>, num2str(b)]);
+0222     <span class="keyword">end</span>
+0223     
+0224     <span class="keyword">for</span> b=1:size(DeOxy,4);
+0225         subplot(<span class="string">'position'</span>, [0.03+(b-1)*0.095 0.2 0.095 0.095]);
+0226         imagesc(Oxy(:,:,info.stimbaseline+info.stimduration,b)+DeOxy(:,:,info.stimbaseline+info.stimduration,b), [-1e-3 1e-3]);
+0227         axis image;
+0228         set(gca, <span class="string">'XTick'</span>, []);
+0229         set(gca, <span class="string">'YTick'</span>, []);
+0230         <span class="keyword">if</span> b==1
+0231             ylabel(<span class="string">'Total'</span>)
+0232         <span class="keyword">end</span>
+0233         title([<span class="string">'Pres '</span>, num2str(b)]);
+0234     <span class="keyword">end</span>
+0235     
+0236     subplot(<span class="string">'position'</span>, [0.05 0.05 0.095 0.095]);
+0237     imagesc(mean(AvgOxy(:,:,info.stimbaseline+info.stimduration-2:info.stimbaseline+info.stimduration),3), [-1e-3 1e-3]);
+0238     axis image off
+0239     title(<span class="string">'Avg Oxy'</span>)
+0240     
+0241     subplot(<span class="string">'position'</span>, [0.20 0.05 0.095 0.095]);
+0242     imagesc(mean(AvgDeOxy(:,:,info.stimbaseline+info.stimduration-2:info.stimbaseline+info.stimduration),3), [-1e-3 1e-3]);
+0243     axis image off
+0244     title(<span class="string">'Avg DeOxy'</span>)
+0245     
+0246     subplot(<span class="string">'position'</span>, [0.35 0.05 0.095 0.095]);
+0247     imagesc(mean(AvgTotal(:,:,info.stimbaseline+info.stimduration-2:info.stimbaseline+info.stimduration),3), [-1e-3 1e-3]);
+0248     axis image off
+0249     title(<span class="string">'Avg Total'</span>)
+0250     
+0251     <span class="comment">%         save([directory, filename,num2str(run),'-datahb'], 'AvgOxy', 'AvgDeOxy', 'AvgTotal', 'Oxy', 'DeOxy', '-append');</span>
+0252     
+0253     <span class="comment">%% Check functional connectivty</span>
+0254     
+0255 <span class="keyword">elseif</span> strcmp(suffix, <span class="string">'fc'</span>)
+0256     
+0257     Oxy=reshape(Oxy,info.nVy*info.nVx,[]);
+0258     seednames={<span class="string">'Olf'</span>,<span class="string">'Fr'</span>,<span class="string">'Cg'</span>,<span class="string">'M'</span>,<span class="string">'SS'</span>,<span class="string">'RS'</span>,<span class="string">'V'</span>};
+0259     seedcenter=seedcenter(1:14,:);
+0260     sides={<span class="string">'L'</span>,<span class="string">'R'</span>};
+0261     
+0262     mm=10;
+0263     mpp=mm/info.nVx;
+0264     seedradmm=0.25;
+0265     seedradpix=seedradmm/mpp;
+0266     
+0267     numseeds=numel(seednames);
+0268     numsides=numel(sides);
+0269     
+0270     P=burnseeds(seedcenter,seedradpix,isbrain);
+0271     strace=P2strace(P,Oxy, seedcenter); <span class="comment">%% strace is each seeds trace resultinmg from averaging the pixels within a seed region</span>
+0272     R=strace2R(strace,Oxy, info.nVx, info.nVy); <span class="comment">%% normalize  rows in time, dot product of those rows with strce</span>
+0273     Rs=normRow(strace)*normRow(strace)';
+0274     
+0275     <span class="keyword">for</span> s=1:numseeds
+0276         
+0277         OE=0;
+0278         <span class="keyword">if</span> mod(s,2)==0
+0279             OE=0.25;
+0280         <span class="keyword">else</span>
+0281             OE=0.05;
+0282         <span class="keyword">end</span>
+0283         
+0284         subplot(<span class="string">'position'</span>, [OE (0.47-((round(s/2)-1)*0.15)) 0.1 0.1]);
+0285         Im2=overlaymouse(R(:,:,(2*(s-1)+1)),WL, isbrain,<span class="string">'jet'</span>,-1,1);
+0286         image(Im2); <span class="comment">%changed 3/1/11</span>
+0287         hold on;
+0288         plot(seedcenter(2*(s-1)+1,1),seedcenter(2*(s-1)+1,2),<span class="string">'ko'</span>);
+0289         axis image off
+0290         title([seednames{s},<span class="string">'R'</span>])
+0291         
+0292         subplot(<span class="string">'position'</span>, [OE+0.10 (0.47-((round(s/2)-1)*0.15)) 0.1 0.1]);
+0293         Im2=overlaymouse(R(:,:,(2*(s-1)+2)),WL, isbrain,<span class="string">'jet'</span>,-1,1);
+0294         image(Im2); <span class="comment">%changed 3/1/11</span>
+0295         hold on;
+0296         plot(seedcenter(2*(s-1)+2,1),seedcenter(2*(s-1)+2,2),<span class="string">'ko'</span>);
+0297         axis image off
+0298         title([seednames{s},<span class="string">'L'</span>])
+0299         hold off;
+0300     <span class="keyword">end</span>
+0301     save([directory, filename,num2str(run),<span class="string">'-datahb'</span>],<span class="string">'R'</span>, <span class="string">'Rs'</span>, <span class="string">'-append'</span>);
+0302 <span class="keyword">end</span>
+0303 
+0304 subplot(<span class="string">'position'</span>, [0.55 0.4 0.35 0.2]);
+0305 [AX, H1, H2]=plotyy(time, InstMvMt/1e6,time, LTMvMt/1e6);
+0306 maxval=3;
+0307 set(AX(1),<span class="string">'ylim'</span>,[0 maxval]);
+0308 set(AX(1),<span class="string">'ytick'</span>,[0,0.2,0.4,0.6,0.8,1]*maxval)
+0309 set(AX(2),<span class="string">'ylim'</span>,[0 maxval]);
+0310 set(AX(2), <span class="string">'ytick'</span>,[0,0.2,0.4,0.6,0.8,1]*maxval)
+0311 set(get(AX(1), <span class="string">'YLabel'</span>), <span class="string">'String'</span>, {<span class="string">'Sum Abs Diff Frame to Frame,'</span>; <span class="string">'(Counts x 10^6)'</span>});
+0312 set(get(AX(2),<span class="string">'YLabel'</span>), <span class="string">'String'</span>, {<span class="string">'Sum Abs Diff WRT First Frame,'</span>; <span class="string">'(Counts x 10^6)'</span>});
+0313 xlabel(<span class="string">'Time  (sec)'</span>);
+0314 xlim(AX(1), [time(1) time(end)])
+0315 xlim(AX(2), [time(1) time(end)])
+0316 legend(<span class="string">'Instantaneous Change'</span>,<span class="string">'Change over Run'</span>);
+0317 
+0318 subplot(<span class="string">'position'</span>, [0.55 0.08 0.35 0.2]);
+0319 plot(time, Shift(1,:),<span class="string">'k'</span>);
+0320 hold on;
+0321 plot(time, Shift(2,:),<span class="string">'b'</span>);
+0322 ylim([-1*(max(Shift(:))+1) max(Shift(:)+1)]);
+0323 xlabel(<span class="string">'Time  (sec)'</span>);
+0324 xlim([time(1) time(end)])
+0325 ylabel(<span class="string">'Offset (pixels)'</span>);
+0326 legend(<span class="string">'Vertical'</span>,<span class="string">'Horizontal'</span>);
+0327 
+0328 <span class="comment">%     annotation('textbox',[0.125 0.95 0.75 0.05],'HorizontalAlignment','center','LineStyle','none','String',[filename,num2str(run),' Data Visualization'],'FontWeight','bold','Color',[1 0 0]);</span>
+0329 annotation(<span class="string">'textbox'</span>,[0.125 0.95 0.75 0.05],<span class="string">'HorizontalAlignment'</span>,<span class="string">'center'</span>,<span class="string">'LineStyle'</span>,<span class="string">'none'</span>,<span class="string">'String'</span>,<span class="string">'Data Visualization'</span>,<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>,<span class="string">'Color'</span>,[1 0 0]);
+0330 
+0331 <span class="comment">%     output=[directory, filename,num2str(run),'_DataVis.jpg'];</span>
+0332 orient portrait
+0333 <span class="comment">%     print ('-djpeg', '-r300', output);</span>
+0334 <span class="comment">%     close all</span>
+0335 <span class="comment">%     save([directory, filename,num2str(run),'-datahb'], 'mdatanorm', 'mdata', 'stddatanorm', 'LTMvMt', 'InstMvMt', 'Shift', 'time', 'fdata', 'hz','info', '-append');</span>
+0336 
+0337 <span class="keyword">end</span>
+0338 
+0339</pre></div>
+<hr><address>Generated on Fri 28-Dec-2018 21:42:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

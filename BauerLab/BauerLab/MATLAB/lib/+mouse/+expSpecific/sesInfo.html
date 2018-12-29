@@ -1,0 +1,93 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of sesInfo</title>
+  <meta name="keywords" content="sesInfo">
+  <meta name="description" content="session2procInfo Making OIS preprocess info from session type">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">BauerLab</a> &gt; <a href="#">MATLAB</a> &gt; <a href="#">lib</a> &gt; <a href="#">+mouse</a> &gt; <a href="index.html">+expSpecific</a> &gt; sesInfo.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for BauerLab\MATLAB\lib\+mouse\+expSpecific&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>sesInfo
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>session2procInfo Making OIS preprocess info from session type</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>function info = sesInfo(sessiontype) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">session2procInfo Making OIS preprocess info from session type
+   Input:
+       sessiontype = string showing type of session ('6-nbdg','gcamp6f')
+   Output:
+       info = struct with info such as framerate, freqout, lowpass,
+       highpass. Should be inputted into procOIS.m function</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function info = sesInfo(sessiontype)</a>
+0002 <span class="comment">%session2procInfo Making OIS preprocess info from session type</span>
+0003 <span class="comment">%   Input:</span>
+0004 <span class="comment">%       sessiontype = string showing type of session ('6-nbdg','gcamp6f')</span>
+0005 <span class="comment">%   Output:</span>
+0006 <span class="comment">%       info = struct with info such as framerate, freqout, lowpass,</span>
+0007 <span class="comment">%       highpass. Should be inputted into procOIS.m function</span>
+0008 
+0009 <span class="comment">% framerate is the sampling rate of your data acquisition method (Hz)</span>
+0010 <span class="comment">% freqout is the output frequency during processing. Usually downsampling</span>
+0011 <span class="comment">% is done to reduce the data size.</span>
+0012 <span class="comment">% lowpass is the frequency at which low pass filter should be implemented</span>
+0013 <span class="comment">% highpass is the frequency at which high pass filter should be implemented</span>
+0014 <span class="keyword">if</span> strcmp(sessiontype,<span class="string">'none'</span>)
+0015     info.framerate = 16.8;
+0016     info.freqout = 16.8;
+0017     info.hbSpecies = 2:4;
+0018     info.probeSpecies = 1;
+0019     info.probeExcitationFile = &quot;fad_excitation.txt&quot;;
+0020     info.probeEmissionFile = &quot;fad_emission.txt&quot;;
+0021     info.detrendSpatially = true;
+0022     info.detrendTemporally = true;
+0023 <span class="keyword">elseif</span> strcmp(sessiontype,<span class="string">'6-nbdg'</span>)
+0024     info.framerate = 16.8;
+0025     info.freqout = 16.8;
+0026     info.hbSpecies = 2:4;
+0027     info.probeSpecies = 1;
+0028     info.probeExcitationFile = &quot;6-nbdg_excitation.txt&quot;;
+0029     info.probeEmissionFile = &quot;6-nbdg_emission.txt&quot;;
+0030     info.detrendSpatially = false;
+0031     info.detrendTemporally = false;
+0032 <span class="keyword">elseif</span> strcmp(sessiontype,<span class="string">'gcamp6f'</span>)
+0033     info.framerate = 16.8;
+0034     info.freqout = 16.8;
+0035     info.hbSpecies = 2:4;
+0036     info.probeSpecies = 1;
+0037     info.probeExcitationFile = &quot;gcamp6f_excitation.txt&quot;;
+0038     info.probeEmissionFile = &quot;gcamp6f_emission.txt&quot;;
+0039     info.detrendSpatially = true;
+0040     info.detrendTemporally = true;
+0041 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Fri 28-Dec-2018 21:42:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

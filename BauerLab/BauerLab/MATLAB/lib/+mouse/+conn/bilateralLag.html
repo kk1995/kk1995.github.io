@@ -1,0 +1,167 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of bilateralLag</title>
+  <meta name="keywords" content="bilateralLag">
+  <meta name="description" content="bilateralLag Finds homotopic lag">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">BauerLab</a> &gt; <a href="#">MATLAB</a> &gt; <a href="#">lib</a> &gt; <a href="#">+mouse</a> &gt; <a href="index.html">+conn</a> &gt; bilateralLag.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for BauerLab\MATLAB\lib\+mouse\+conn&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>bilateralLag
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>bilateralLag Finds homotopic lag</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>function [lagTime,lagAmp,covResult] = bilateralLag(data,edgeLen,tZone,corrThr) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">bilateralLag Finds homotopic lag
+   Inputs:
+       data = pix dim1 x pix dim2 x time
+       edgeLen = data points from peak to consider for quadratic fit (if 3, 7
+       points around are considered)
+       tZone = frame at which the lag is considered insensible (becomes
+       nan)
+       corrThr = correlation threshold at which lag time is considered
+       (default = 0.3)
+   Outputs:
+       lagTime = pix dim1 x pix dim2 = how many frames is shifted relative
+       to right side?
+       lagAmp = pix dim1 x pix dim2 = how strong is the correlation at
+       lagTime shift (0 to 1)?
+       covResult = pix (dim1 and dim2) x time
+
+ (c) 2018 Washington University in St. Louis
+ All Right Reserved
+
+ Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ You may not use this file except in compliance with the License.
+ A copy of the License is available is with the distribution and can also
+ be found at:
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS
+ IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ PURPOSE, OR THAT THE USE OF THE SOFTWARD WILL NOT INFRINGE ANY PATENT
+ COPYRIGHT, TRADEMARK, OR OTHER PROPRIETARY RIGHTS ARE DISCLAIMED. IN NO
+ EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY
+ DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ POSSIBILITY OF SUCH DAMAGE.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [lagTime,lagAmp,covResult] = bilateralLag(data,edgeLen,tZone,corrThr)</a>
+0002 <span class="comment">%bilateralLag Finds homotopic lag</span>
+0003 <span class="comment">%   Inputs:</span>
+0004 <span class="comment">%       data = pix dim1 x pix dim2 x time</span>
+0005 <span class="comment">%       edgeLen = data points from peak to consider for quadratic fit (if 3, 7</span>
+0006 <span class="comment">%       points around are considered)</span>
+0007 <span class="comment">%       tZone = frame at which the lag is considered insensible (becomes</span>
+0008 <span class="comment">%       nan)</span>
+0009 <span class="comment">%       corrThr = correlation threshold at which lag time is considered</span>
+0010 <span class="comment">%       (default = 0.3)</span>
+0011 <span class="comment">%   Outputs:</span>
+0012 <span class="comment">%       lagTime = pix dim1 x pix dim2 = how many frames is shifted relative</span>
+0013 <span class="comment">%       to right side?</span>
+0014 <span class="comment">%       lagAmp = pix dim1 x pix dim2 = how strong is the correlation at</span>
+0015 <span class="comment">%       lagTime shift (0 to 1)?</span>
+0016 <span class="comment">%       covResult = pix (dim1 and dim2) x time</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">% (c) 2018 Washington University in St. Louis</span>
+0019 <span class="comment">% All Right Reserved</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">% Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+0022 <span class="comment">% You may not use this file except in compliance with the License.</span>
+0023 <span class="comment">% A copy of the License is available is with the distribution and can also</span>
+0024 <span class="comment">% be found at:</span>
+0025 <span class="comment">%</span>
+0026 <span class="comment">% http://www.apache.org/licenses/LICENSE-2.0</span>
+0027 <span class="comment">%</span>
+0028 <span class="comment">% THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS</span>
+0029 <span class="comment">% IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,</span>
+0030 <span class="comment">% THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR</span>
+0031 <span class="comment">% PURPOSE, OR THAT THE USE OF THE SOFTWARD WILL NOT INFRINGE ANY PATENT</span>
+0032 <span class="comment">% COPYRIGHT, TRADEMARK, OR OTHER PROPRIETARY RIGHTS ARE DISCLAIMED. IN NO</span>
+0033 <span class="comment">% EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY</span>
+0034 <span class="comment">% DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL</span>
+0035 <span class="comment">% DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS</span>
+0036 <span class="comment">% OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)</span>
+0037 <span class="comment">% HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,</span>
+0038 <span class="comment">% STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN</span>
+0039 <span class="comment">% ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE</span>
+0040 <span class="comment">% POSSIBILITY OF SUCH DAMAGE.</span>
+0041 
+0042 validInd = -tZone:tZone;
+0043 
+0044 <span class="comment">% initialize outputs</span>
+0045 lagTime = nan(size(data,1),size(data,2));
+0046 lagAmp = nan(size(data,1),size(data,2));
+0047 
+0048 colMiddle = floor(size(data,2)/2);
+0049 covResult = nan(size(data,1)*size(data,2)/2,numel(validInd));
+0050 <span class="keyword">for</span> pixRow = 1:size(data,1) <span class="comment">% for each pixel</span>
+0051     
+0052     <span class="keyword">for</span> pixCol = 1:size(data,2)
+0053         pixColOpposite = size(data,2) - pixCol + 1;
+0054         <span class="keyword">if</span> pixCol &lt;= colMiddle
+0055             data1 = squeeze(data(pixRow,pixCol,:));
+0056             data2 = squeeze(data(pixRow,pixColOpposite,:));
+0057             
+0058             <span class="keyword">if</span> isnan(nanmean(data1)) || isnan(nanmean(data2))
+0059                 lagTime(pixRow,pixCol) = NaN;
+0060                 lagAmp(pixRow,pixCol) = NaN;
+0061             <span class="keyword">else</span>
+0062                 [lagTime(pixRow,pixCol),lagAmp(pixRow,pixCol),covResultPix] = mouse.conn.findLag(data1,data2,true,false,validInd,edgeLen,corrThr); <span class="comment">% finding lag; data 1 lags data 2 by how much</span>
+0063                 
+0064                 <span class="comment">% remove any lag time that is absurd</span>
+0065                 <span class="keyword">if</span> abs(lagTime(pixRow,pixCol)) &gt; tZone
+0066                     lagTime(pixRow,pixCol) = NaN;
+0067                     lagAmp(pixRow,pixCol) = NaN;
+0068                 <span class="keyword">end</span>
+0069                 
+0070                 <span class="keyword">if</span> ~isnan(lagTime(pixRow,pixCol))
+0071                     covResult(pixRow+(pixCol-1)*size(data,1),:) = covResultPix;
+0072                 <span class="keyword">end</span>
+0073             <span class="keyword">end</span>
+0074             
+0075         <span class="keyword">else</span> <span class="comment">% upper triangle</span>
+0076             lagTime(pixRow,pixCol) = -lagTime(pixRow,pixColOpposite);
+0077             lagAmp(pixRow,pixCol) = lagAmp(pixRow,pixColOpposite);
+0078         <span class="keyword">end</span>
+0079     <span class="keyword">end</span>
+0080 <span class="keyword">end</span>
+0081 <span class="keyword">end</span>
+0082</pre></div>
+<hr><address>Generated on Fri 28-Dec-2018 21:42:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

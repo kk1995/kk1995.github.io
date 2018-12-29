@@ -1,0 +1,129 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of plotScatter</title>
+  <meta name="keywords" content="plotScatter">
+  <meta name="description" content="plotNodeBrain Outputs brain mask image with nodes drawn on top of it">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">BauerLab</a> &gt; <a href="#">MATLAB</a> &gt; <a href="#">lib</a> &gt; <a href="#">+mouse</a> &gt; <a href="index.html">+plot</a> &gt; plotScatter.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for BauerLab\MATLAB\lib\+mouse\+plot&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>plotScatter
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>plotNodeBrain Outputs brain mask image with nodes drawn on top of it</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>function figH = plotScatter(figH,nodeLoc,nodeVal,cLim,varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">plotNodeBrain Outputs brain mask image with nodes drawn on top of it
+   figH = figure handle. If empty a new figure will be created.
+   nodeLoc = (nx2) matrix, 1st col is x (horizontal) and 2nd col is y
+   (vertical)
+   nodeVal = (nx1) vector, each is some value you want to represent
+   cLim = limitations of the colors to use.
+   cMap (optional) = colormap for the nodes and colorbar
+   ringSize (optional) = size of ring (pixel) (default = 64)
+   thickness (optional) = thickness of rings (pixel) (default = 0.5)
+   marker (optional) = shape of marker (default = ring)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function figH = plotScatter(figH,nodeLoc,nodeVal,cLim,varargin)</a>
+0002 <span class="comment">%plotNodeBrain Outputs brain mask image with nodes drawn on top of it</span>
+0003 <span class="comment">%   figH = figure handle. If empty a new figure will be created.</span>
+0004 <span class="comment">%   nodeLoc = (nx2) matrix, 1st col is x (horizontal) and 2nd col is y</span>
+0005 <span class="comment">%   (vertical)</span>
+0006 <span class="comment">%   nodeVal = (nx1) vector, each is some value you want to represent</span>
+0007 <span class="comment">%   cLim = limitations of the colors to use.</span>
+0008 <span class="comment">%   cMap (optional) = colormap for the nodes and colorbar</span>
+0009 <span class="comment">%   ringSize (optional) = size of ring (pixel) (default = 64)</span>
+0010 <span class="comment">%   thickness (optional) = thickness of rings (pixel) (default = 0.5)</span>
+0011 <span class="comment">%   marker (optional) = shape of marker (default = ring)</span>
+0012 
+0013 <span class="keyword">if</span> numel(varargin) &lt; 1
+0014     cMap = mouse.plot.blueWhiteRed(100,[0 1]);
+0015 <span class="keyword">else</span>
+0016     cMap = varargin{1};
+0017 <span class="keyword">end</span>
+0018 
+0019 <span class="keyword">if</span> numel(varargin) &lt; 2
+0020     ringSize = 64;
+0021 <span class="keyword">else</span>
+0022     ringSize = varargin{2};
+0023 <span class="keyword">end</span>
+0024 
+0025 <span class="keyword">if</span> numel(varargin) &lt; 3
+0026     lineWidth = 0.5;
+0027 <span class="keyword">else</span>
+0028     lineWidth = varargin{3};
+0029 <span class="keyword">end</span>
+0030 
+0031 <span class="keyword">if</span> numel(varargin) &lt; 4
+0032     marker = <span class="string">'o'</span>;
+0033 <span class="keyword">else</span>
+0034     marker = varargin{4};
+0035 <span class="keyword">end</span>
+0036 
+0037 
+0038 <span class="comment">% make new figure handle if it does not exist.</span>
+0039 <span class="keyword">if</span> isempty(figH)
+0040     figH = figure;
+0041 <span class="keyword">end</span>
+0042 
+0043 <span class="keyword">if</span> contains(class(figH),<span class="string">'Figure'</span>)
+0044     dummyAxes = axes;
+0045     axesPosition = dummyAxes.Position;
+0046     set(dummyAxes,<span class="string">'Visible'</span>,<span class="string">'off'</span>);
+0047 <span class="keyword">else</span>
+0048     dummyAxes = figH;
+0049     axesPosition = dummyAxes.Position;
+0050     set(dummyAxes,<span class="string">'Visible'</span>,<span class="string">'off'</span>);
+0051 <span class="keyword">end</span>
+0052 
+0053 <span class="comment">% make new axes for nodes</span>
+0054 hAxesNodes = axes;
+0055 set(hAxesNodes,<span class="string">'Position'</span>,axesPosition);
+0056 
+0057 <span class="comment">% plot nodes</span>
+0058 nodeVal(nodeVal&lt;cLim(1)) = cLim(1); <span class="comment">% saturation of color for nodes</span>
+0059 nodeVal(nodeVal&gt;cLim(2)) = cLim(2);
+0060 cInd = round((nodeVal - cLim(1))./(cLim(2)-cLim(1))*99)+1; <span class="comment">% get color ind</span>
+0061 scatter(hAxesNodes,nodeLoc(:,1),nodeLoc(:,2),ringSize,cMap(cInd,:),marker,<span class="string">'LineWidth'</span>,lineWidth);
+0062 set(hAxesNodes,<span class="string">'Colormap'</span>,cMap);
+0063 set(hAxesNodes,<span class="string">'YDir'</span>,<span class="string">'reverse'</span>);
+0064 set(hAxesNodes,<span class="string">'Visible'</span>,<span class="string">'off'</span>);
+0065 caxis(cLim);
+0066 axis(hAxesNodes,<span class="string">'square'</span>)
+0067 
+0068 
+0069 <span class="comment">%link the two overlaying axes so they match at all times to remain accurate</span>
+0070 linkaxes([dummyAxes,hAxesNodes]);
+0071 
+0072 <span class="keyword">end</span>
+0073</pre></div>
+<hr><address>Generated on Fri 28-Dec-2018 21:42:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

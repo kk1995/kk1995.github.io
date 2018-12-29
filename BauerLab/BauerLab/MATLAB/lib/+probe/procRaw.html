@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of procRaw</title>
+  <meta name="keywords" content="procRaw">
+  <meta name="description" content="procRaw Detrends raw data (temporally and spatially)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">BauerLab</a> &gt; <a href="#">MATLAB</a> &gt; <a href="#">lib</a> &gt; <a href="index.html">+probe</a> &gt; procRaw.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for BauerLab\MATLAB\lib\+probe&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>procRaw
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>procRaw Detrends raw data (temporally and spatially)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function output = procRaw(raw,temporalDetrend,spatialDetrend) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">procRaw Detrends raw data (temporally and spatially)
+   output = procRaw(raw)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="probeImaging.html" class="code" title="function [raw, time, xform_datahb, xform_probe, xform_probeCorr, isbrain, xform_isbrain, markers]= probeImaging(tiffFileName, systemInfo, sessionInfo, varargin)">probeImaging</a>	probeImaging Processes tiff file to output hemoglobin data, probe data, and</li><li><a href="probeImagingRaw.html" class="code" title="function [raw, time, xform_hb, xform_probe, xform_probeCorr, isbrain, xform_isbrain, markers]= probeImagingRaw(raw, systemInfo, sessionInfo, varargin)">probeImagingRaw</a>	probeImaging Processes tiff file to output hemoglobin data, probe data, and</li><li><a href="probeImagingRaw_old.html" class="code" title="function [raw, time, xform_hb, xform_probe, xform_probeCorr, isbrain, xform_isbrain, markers]= probeImagingRaw(raw, systemInfo, sessionInfo, varargin)">probeImagingRaw_old</a>	probeImaging Processes tiff file to output hemoglobin data, probe data, and</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function output = procRaw(raw,temporalDetrend,spatialDetrend)</a>
+0002 <span class="comment">%procRaw Detrends raw data (temporally and spatially)</span>
+0003 <span class="comment">%   output = procRaw(raw)</span>
+0004 
+0005 output = raw;
+0006 
+0007 rawSize = size(raw);
+0008 tSize = size(raw,4);
+0009 
+0010 <span class="comment">% spatial and temporal detrending</span>
+0011 rawReshaped = reshape(raw,[],tSize);
+0012 
+0013 <span class="keyword">if</span> temporalDetrend
+0014     warning(<span class="string">'Off'</span>);
+0015     timeTrend = zeros(size(rawReshaped));
+0016     <span class="keyword">for</span> ii = 1:size(rawReshaped,1)
+0017         timeTrend(ii,:) = polyval(polyfit(1:tSize, rawReshaped(ii,:), 4), 1:tSize);
+0018     <span class="keyword">end</span>
+0019     rawFrameOne = raw(:,:,:,1);
+0020     timeTrend = reshape(timeTrend,rawSize);
+0021     output = bsxfun(@rdivide, output, timeTrend).*repmat(rawFrameOne,1,1,1,tSize);
+0022     warning(<span class="string">'On'</span>);
+0023 <span class="keyword">end</span>
+0024 
+0025 <span class="keyword">if</span> spatialDetrend
+0026     <span class="comment">% spatial detrending</span>
+0027     spatTrend = bsxfun(@rdivide, mean(raw,4), mean(mean(mean(raw,4))));
+0028     output = bsxfun(@rdivide, output, spatTrend);
+0029 <span class="keyword">end</span>
+0030 
+0031 
+0032 <span class="keyword">end</span>
+0033</pre></div>
+<hr><address>Generated on Fri 28-Dec-2018 21:42:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

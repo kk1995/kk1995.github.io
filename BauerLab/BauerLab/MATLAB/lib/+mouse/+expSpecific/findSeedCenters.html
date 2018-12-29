@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of findSeedCenters</title>
+  <meta name="keywords" content="findSeedCenters">
+  <meta name="description" content="findSeedCenters If a map of regions is given, this function outputs the">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">BauerLab</a> &gt; <a href="#">MATLAB</a> &gt; <a href="#">lib</a> &gt; <a href="#">+mouse</a> &gt; <a href="index.html">+expSpecific</a> &gt; findSeedCenters.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for BauerLab\MATLAB\lib\+mouse\+expSpecific&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>findSeedCenters
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>findSeedCenters If a map of regions is given, this function outputs the</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>function seedCenters = findSeedCenters(roiLocs) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">findSeedCenters If a map of regions is given, this function outputs the
+center location of each region
+   Inputs:
+       roiLocs = 2D array with each region having unique index</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function seedCenters = findSeedCenters(roiLocs)</a>
+0002 <span class="comment">%findSeedCenters If a map of regions is given, this function outputs the</span>
+0003 <span class="comment">%center location of each region</span>
+0004 <span class="comment">%   Inputs:</span>
+0005 <span class="comment">%       roiLocs = 2D array with each region having unique index</span>
+0006 
+0007 seedIndices = unique(roiLocs); seedIndices(seedIndices==0) = [];
+0008 <span class="keyword">if</span> size(seedIndices,1) ~= 1
+0009     seedIndices = seedIndices';
+0010 <span class="keyword">end</span>
+0011 ind = 0;
+0012 seedCenters = nan(numel(seedIndices,2));
+0013 <span class="keyword">for</span> seedInd = seedIndices
+0014     ind = ind+1;
+0015     pix = find(roiLocs == seedInd);
+0016     [row, col] = mouse.plot.ind2D(pix,size(roiLocs));
+0017     seedCenters(ind,1) = mean(col);
+0018     seedCenters(ind,2) = mean(row);
+0019 <span class="keyword">end</span>
+0020 seedCenters = round(seedCenters); <span class="comment">% n x 2</span>
+0021 <span class="keyword">end</span>
+0022</pre></div>
+<hr><address>Generated on Fri 28-Dec-2018 21:42:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

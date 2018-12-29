@@ -1,0 +1,116 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of findLagBauer</title>
+  <meta name="keywords" content="findLagBauer">
+  <meta name="description" content="findLag Calculates cross covariance and finds the peak to obtain lag.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">BauerLab</a> &gt; <a href="#">MATLAB</a> &gt; <a href="#">lib</a> &gt; <a href="#">+mouse</a> &gt; <a href="index.html">+conn</a> &gt; findLagBauer.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for BauerLab\MATLAB\lib\+mouse\+conn&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>findLagBauer
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>findLag Calculates cross covariance and finds the peak to obtain lag.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>function [lagTime,lagAmp,covResult,sign] = findLagBauer(data1,data2) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">findLag Calculates cross covariance and finds the peak to obtain lag.
+   There is also the option to use quadratic fit to get the lag time.
+   data1 = time series, 1D
+   data2 = time series, 2D
+Output:
+   lagTime = if positive, data1 lags behind data2.
+   lagAmp = how strong the dependence is.
+   covResult = cross covariance result
+   sign = whether the lag is from positive correlation or negative
+   correlation. (1 = correlation, 0 = anti-correlation)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [lagTime,lagAmp,covResult,sign] = findLagBauer(data1,data2)</a>
+0002 <span class="comment">%findLag Calculates cross covariance and finds the peak to obtain lag.</span>
+0003 <span class="comment">%   There is also the option to use quadratic fit to get the lag time.</span>
+0004 <span class="comment">%   data1 = time series, 1D</span>
+0005 <span class="comment">%   data2 = time series, 2D</span>
+0006 <span class="comment">%Output:</span>
+0007 <span class="comment">%   lagTime = if positive, data1 lags behind data2.</span>
+0008 <span class="comment">%   lagAmp = how strong the dependence is.</span>
+0009 <span class="comment">%   covResult = cross covariance result</span>
+0010 <span class="comment">%   sign = whether the lag is from positive correlation or negative</span>
+0011 <span class="comment">%   correlation. (1 = correlation, 0 = anti-correlation)</span>
+0012 
+0013 TP=10;  <span class="comment">% Number of time points about 0 to use in covariance calulation</span>
+0014 maxTS=7;<span class="comment">% maximum timeshift allowed</span>
+0015 lags=-TP:1:TP;
+0016 
+0017 [covResult, templag] = xcov(data1,data2,TP,<span class="string">'coeff'</span>);
+0018 [ymax,imax,ymin,imin] = extrema(covResult);
+0019 idx=find(imax&lt;numel(lags) &amp; imax&gt;1);
+0020 imax=imax(idx);
+0021 ymax=ymax(idx);
+0022 idx=find(imin&lt;numel(lags) &amp; imin&gt;1);
+0023 imin=imin(idx);
+0024 ymin=ymin(idx);
+0025 
+0026 <span class="keyword">if</span> numel(imax)==1 &amp;&amp; isempty(imin) &amp;&amp; abs(lags(imax))&lt;=maxTS
+0027     sign=1;
+0028     p = polyfit(templag(imax-3:imax+3),covResult(imax-3:imax+3),2);    <span class="comment">%only fit parabola over 7 seconds of data centered on extrema</span>
+0029     f = polyval(p,templag(imax-3:imax+3));
+0030     lagTime=-0.5*p(2)/p(1);
+0031     lagAmp=p(1)*lagTime.^2+p(2)*lagTime+p(3);
+0032 <span class="keyword">elseif</span> numel(imin)==1 &amp;&amp; isempty(imax) &amp;&amp; abs(lags(imin))&lt;=maxTS
+0033     sign=0;
+0034     p = polyfit(templag(imin-3:imin+3),covResult(imin-3:imin+3),2);    <span class="comment">%only fit parabola over 7 seconds of data centered on extrema</span>
+0035     f = polyval(p,templag(imin-3:imin+3));
+0036     lagTime=-0.5*p(2)/p(1);
+0037     lagAmp=p(1)*lagTime.^2+p(2)*lagTime+p(3);
+0038 <span class="keyword">elseif</span> numel(imin)&gt;0 &amp;&amp; numel(imax)&gt;0
+0039     [~, Imax]=max(ymax);
+0040     [~, Imin]=max(abs(ymin));
+0041     <span class="keyword">if</span> max(ymax)&gt;max(abs(ymin))&amp;&amp; abs(lags(imax(Imax)))&lt;=maxTS
+0042         sign=1;
+0043         p = polyfit(templag(imax(Imax)-3:imax(Imax)+3),covResult(imax(Imax)-3:imax(Imax)+3),2);    <span class="comment">%only fit parabola over 7 seconds of data centered on extrema</span>
+0044         f = polyval(p,templag(imax(Imax)-3:imax(Imax)+3));
+0045         lagTime=-0.5*p(2)/p(1);
+0046         lagAmp=p(1)*lagTime.^2+p(2)*lagTime+p(3);
+0047     <span class="keyword">elseif</span> max(abs(ymin))&gt;max(ymax)&amp;&amp; abs(lags(imin(Imin)))&lt;=maxTS
+0048         sign=0;
+0049         p = polyfit(templag(imin(Imin)-3:imin(Imin)+3),covResult(imin(Imin)-3:imin(Imin)+3),2);    <span class="comment">%only fit parabola over 7 seconds of data centered on extrema</span>
+0050         f = polyval(p,templag(imin(Imin)-3:imin(Imin)+3));
+0051         lagTime=-0.5*p(2)/p(1);
+0052         lagAmp=p(1)*lagTime.^2+p(2)*lagTime+p(3);
+0053     <span class="keyword">end</span>
+0054 <span class="keyword">else</span>
+0055     lagTime=NaN;
+0056     lagAmp=NaN;
+0057     sign=NaN;
+0058 <span class="keyword">end</span>
+0059 <span class="keyword">end</span>
+0060</pre></div>
+<hr><address>Generated on Fri 28-Dec-2018 21:42:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

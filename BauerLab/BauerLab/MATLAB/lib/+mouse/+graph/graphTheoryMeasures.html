@@ -1,0 +1,179 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of graphTheoryMeasures</title>
+  <meta name="keywords" content="graphTheoryMeasures">
+  <meta name="description" content="graphTheoryMeasures Obtain various graph theory measures for a matrix">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">BauerLab</a> &gt; <a href="#">MATLAB</a> &gt; <a href="#">lib</a> &gt; <a href="#">+mouse</a> &gt; <a href="index.html">+graph</a> &gt; graphTheoryMeasures.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for BauerLab\MATLAB\lib\+mouse\+graph&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>graphTheoryMeasures
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>graphTheoryMeasures Obtain various graph theory measures for a matrix</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>function output = graphTheoryMeasures(data) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">graphTheoryMeasures Obtain various graph theory measures for a matrix
+describing connections between nodes
+   Input:
+       data = 2D square matrix.
+   Output:
+       output = struct containing graph theory measurements
+           local = sub struct containing nodal values
+               clusterCoefficient
+               pathLength
+               strength
+               betweenness
+               hub
+           global = sub struct containing network values
+               clusterCoefficient
+               pathLength
+               smallWorldness
+               smallWorldPropensity
+   Dependencies: GraphMeasures (https://sites.google.com/site/bctnet/)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function output = graphTheoryMeasures(data)</a>
+0002 <span class="comment">%graphTheoryMeasures Obtain various graph theory measures for a matrix</span>
+0003 <span class="comment">%describing connections between nodes</span>
+0004 <span class="comment">%   Input:</span>
+0005 <span class="comment">%       data = 2D square matrix.</span>
+0006 <span class="comment">%   Output:</span>
+0007 <span class="comment">%       output = struct containing graph theory measurements</span>
+0008 <span class="comment">%           local = sub struct containing nodal values</span>
+0009 <span class="comment">%               clusterCoefficient</span>
+0010 <span class="comment">%               pathLength</span>
+0011 <span class="comment">%               strength</span>
+0012 <span class="comment">%               betweenness</span>
+0013 <span class="comment">%               hub</span>
+0014 <span class="comment">%           global = sub struct containing network values</span>
+0015 <span class="comment">%               clusterCoefficient</span>
+0016 <span class="comment">%               pathLength</span>
+0017 <span class="comment">%               smallWorldness</span>
+0018 <span class="comment">%               smallWorldPropensity</span>
+0019 <span class="comment">%   Dependencies: GraphMeasures (https://sites.google.com/site/bctnet/)</span>
+0020 
+0021 <span class="comment">%% preprocessing</span>
+0022 
+0023 <span class="comment">% interestingly, literature uses value of 0 for diagonal indices</span>
+0024 c = size(data, 1);
+0025 idx = 1:c+1:numel(data);
+0026 data(idx) = 0;
+0027 
+0028 <span class="comment">% % make it binary</span>
+0029 <span class="comment">% density = 0.3; % 30%</span>
+0030 <span class="comment">% thr = prctile(data(:),100-density*100);</span>
+0031 <span class="comment">% data = data &gt; thr;</span>
+0032 <span class="comment">% data = double(data);</span>
+0033 
+0034 <span class="comment">%% local</span>
+0035 
+0036 <span class="comment">% clustering coefficient</span>
+0037 clusterCoeff = clustering_coef_wu(data);
+0038 output.local.clusterCoefficient = clusterCoeff;
+0039 
+0040 <span class="comment">% path length</span>
+0041 L = weight_conversion(data,<span class="string">'lengths'</span>);
+0042 distance=distance_wei(L); <span class="comment">% get distance</span>
+0043 nodeNum = size(data,1);
+0044 pathLen = nan(nodeNum,1);
+0045 <span class="keyword">for</span> node = 1:nodeNum
+0046     ind = 1:nodeNum; ind(node) = [];
+0047     pathLen(node) = harmmean(distance(node,ind));
+0048 <span class="keyword">end</span>
+0049 output.local.pathLength = pathLen;
+0050 
+0051 <span class="comment">% strength</span>
+0052 strength = sum(data,2);
+0053 output.local.strength = strength;
+0054 
+0055 <span class="comment">% betweenness centrality</span>
+0056 BC = betweenness_wei(L);
+0057 output.local.betweenness = BC;
+0058 
+0059 <span class="comment">% hub</span>
+0060 thr = 0.2; <span class="comment">% top 20 percent</span>
+0061 lowClusterCoeff = output.local.clusterCoefficient &lt; <span class="keyword">...</span>
+0062     prctile(output.local.clusterCoefficient,thr*100);
+0063 lowPathLen = output.local.pathLength &lt; <span class="keyword">...</span>
+0064     prctile(output.local.pathLength,thr*100);
+0065 highStrength = output.local.strength &gt; <span class="keyword">...</span>
+0066     prctile(output.local.strength,(1-thr)*100);
+0067 highBetweenness = output.local.betweenness &gt; <span class="keyword">...</span>
+0068     prctile(output.local.betweenness,(1-thr)*100);
+0069 score = lowClusterCoeff + lowPathLen + highStrength + highBetweenness;
+0070 hub = score &gt; 1; <span class="comment">% 2 or more measures fitting hub definition</span>
+0071 output.local.hub = hub;
+0072 
+0073 <span class="comment">%% global</span>
+0074 
+0075 <span class="comment">% clustering coefficient</span>
+0076 clusterCoeff = nanmean(output.local.clusterCoefficient);
+0077 output.global.clusterCoefficient = clusterCoeff;
+0078 
+0079 <span class="comment">% path length</span>
+0080 c = size(distance, 1);
+0081 idx = 1:c+1:numel(distance);
+0082 distance = distance(:);
+0083 distance(idx) = [];
+0084 pathLen = harmmean(distance);
+0085 output.global.pathLength = pathLen;
+0086 
+0087 <span class="comment">% small-worldness</span>
+0088 iterNum = 100; <span class="comment">% thinking 100 iterations is enough</span>
+0089 clusterCoeffRand = nan(iterNum,1);
+0090 pathLenRand = nan(iterNum,1);
+0091 <span class="keyword">for</span> iter = 1:iterNum
+0092     dataRandIter = mouse.conn.randConn(data);
+0093     clusterCoeffRandIter = nanmean(clustering_coef_wu(dataRandIter)); <span class="comment">% get unspecific network's characteristic</span>
+0094     L = weight_conversion(dataRandIter,<span class="string">'lengths'</span>);
+0095     distanceRandIter=distance_wei(L); <span class="comment">% get weighted distance</span>
+0096     c = size(distanceRandIter, 1);
+0097     idx = 1:c+1:numel(distanceRandIter);
+0098     distanceRandIter = distanceRandIter(:);
+0099     distanceRandIter(idx) = []; <span class="comment">% get rid of diagonal values (self distance)</span>
+0100     pathLenRandIter = harmmean(distanceRandIter);
+0101     clusterCoeffRand(iter) = clusterCoeffRandIter;
+0102     pathLenRand(iter) = pathLenRandIter;
+0103 <span class="keyword">end</span>
+0104 
+0105 clusterCoeffRand = nanmean(clusterCoeffRand);
+0106 pathLenRand = nanmean(pathLenRand);
+0107 
+0108 smallWorld = (output.global.clusterCoefficient./clusterCoeffRand)./(output.global.pathLength./pathLenRand);
+0109 output.global.smallWorldness = smallWorld;
+0110 
+0111 <span class="comment">% smallWorldPropensity</span>
+0112 [SWP,delta_C,delta_L] = mouse.graph.smallWorldPropensity(data);
+0113 output.global.smallWorldPropensity = SWP;
+0114 <span class="keyword">end</span>
+0115</pre></div>
+<hr><address>Generated on Fri 28-Dec-2018 21:42:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

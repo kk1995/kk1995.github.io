@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of loadTiffResample</title>
+  <meta name="keywords" content="loadTiffResample">
+  <meta name="description" content="loadTiffResample Loads multiple tiff files and resample it to lower">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">BauerLab</a> &gt; <a href="#">MATLAB</a> &gt; <a href="#">lib</a> &gt; <a href="#">+mouse</a> &gt; <a href="index.html">+preprocess</a> &gt; loadTiffResample.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for BauerLab\MATLAB\lib\+mouse\+preprocess&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>loadTiffResample
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>loadTiffResample Loads multiple tiff files and resample it to lower</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>function [time,raw] = loadTiffResample(tiffFileName,speciesNum,freqIn,freqOut) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">loadTiffResample Loads multiple tiff files and resample it to lower
+frequency. There are no extraneous parts like getting rid of bad frames or
+such.
+   Detailed explanation goes here</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [time,raw] = loadTiffResample(tiffFileName,speciesNum,freqIn,freqOut)</a>
+0002 <span class="comment">%loadTiffResample Loads multiple tiff files and resample it to lower</span>
+0003 <span class="comment">%frequency. There are no extraneous parts like getting rid of bad frames or</span>
+0004 <span class="comment">%such.</span>
+0005 <span class="comment">%   Detailed explanation goes here</span>
+0006 
+0007 
+0008 raw = [];
+0009 timeLast = 0; <span class="comment">% last time point</span>
+0010 remainingTiffData = [];
+0011 remainingData = [];
+0012 remainingT = [];
+0013 time = [];
+0014 <span class="keyword">for</span> fileInd = 1:numel(tiffFileName)
+0015     fileName = tiffFileName(fileInd);
+0016     [rawOutput, remainingTiffData] = <span class="keyword">...</span>
+0017         mouse.preprocess.loadTiffRaw(fileName,speciesNum,remainingTiffData);
+0018     rawT = linspace(timeLast, timeLast + size(rawOutput,4)./freqIn, size(rawOutput,4) + 1);
+0019     rawT(1) = [];
+0020     
+0021     rawOutput = cat(4,remainingData,rawOutput);
+0022     rawT = [remainingT rawT];
+0023     
+0024 <span class="comment">%     if fileInd == 1 % get rid of first frame if first file</span>
+0025 <span class="comment">%         rawOutput(:,:,:,1) = [];</span>
+0026 <span class="comment">%         rawT(1) = [];</span>
+0027 <span class="comment">%     end</span>
+0028     timeLast = rawT(end);
+0029     
+0030     <span class="comment">% resampling</span>
+0031     resampledT = (ceil(rawT(1)*freqOut)/freqOut):(1/freqOut):rawT(end);
+0032     resampledRaw = mouse.freq.resampledata(rawOutput,rawT,resampledT);
+0033     remainingDataStartInd = find(rawT &lt; resampledT(end), 1, <span class="string">'last'</span>); <span class="comment">% index of rawT that is before last resampledT</span>
+0034     remainingData = rawOutput(:,:,:,remainingDataStartInd:size(rawOutput,4));
+0035     remainingT = rawT(remainingDataStartInd:end);
+0036     
+0037     <span class="keyword">if</span> fileInd ~= numel(tiffFileName)
+0038         resampledT(end) = [];
+0039         resampledRaw(:,:,:,size(resampledRaw,4)) = [];
+0040     <span class="keyword">end</span>
+0041     
+0042     rawDim = size(rawOutput);
+0043     raw = cat(numel(rawDim),raw,resampledRaw);
+0044     time = [time resampledT];
+0045 <span class="keyword">end</span>
+0046 <span class="keyword">end</span>
+0047</pre></div>
+<hr><address>Generated on Fri 28-Dec-2018 21:42:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

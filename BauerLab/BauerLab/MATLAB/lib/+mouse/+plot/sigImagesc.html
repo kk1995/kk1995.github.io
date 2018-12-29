@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of sigImagesc</title>
+  <meta name="keywords" content="sigImagesc">
+  <meta name="description" content="UNTITLED4 Summary of this function goes here">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">BauerLab</a> &gt; <a href="#">MATLAB</a> &gt; <a href="#">lib</a> &gt; <a href="#">+mouse</a> &gt; <a href="index.html">+plot</a> &gt; sigImagesc.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for BauerLab\MATLAB\lib\+mouse\+plot&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>sigImagesc
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>UNTITLED4 Summary of this function goes here</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>function ax = sigImagesc(ax,data1,data2,labels,cLim) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">UNTITLED4 Summary of this function goes here
+   shows data2 - data1 values
+   only shows values that are significantly different (p &lt; 0.05)
+   data1 = 3D mat
+   data2 = 3D mat. First 2 dim needs to be same size as those of data1
+   labels = cell array of labels
+   cLim = color bar limit</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+<li><a href="blueWhiteRed.html" class="code" title="function customMap = blueWhiteRed(varargin)">blueWhiteRed</a>	blueWhiteRed Makes custom color map that goes from blue to white to red</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function ax = sigImagesc(ax,data1,data2,labels,cLim)</a>
+0002 <span class="comment">%UNTITLED4 Summary of this function goes here</span>
+0003 <span class="comment">%   shows data2 - data1 values</span>
+0004 <span class="comment">%   only shows values that are significantly different (p &lt; 0.05)</span>
+0005 <span class="comment">%   data1 = 3D mat</span>
+0006 <span class="comment">%   data2 = 3D mat. First 2 dim needs to be same size as those of data1</span>
+0007 <span class="comment">%   labels = cell array of labels</span>
+0008 <span class="comment">%   cLim = color bar limit</span>
+0009 
+0010 
+0011 
+0012 <span class="comment">% find significant differences in connectivity matrix</span>
+0013 sigCon = false(size(data1,1),size(data1,2));
+0014 <span class="keyword">for</span> y = 1:size(data1,1)
+0015     <span class="keyword">for</span> x = 1:size(data1,2)
+0016         group1 = data1(y,x,:);
+0017         group1(isinf(group1)) = [];
+0018         group1(isnan(group1)) = [];
+0019         group2 = data2(y,x,:);
+0020         group2(isinf(group2)) = [];
+0021         group2(isnan(group2)) = [];
+0022         <span class="keyword">if</span> ~isempty(group1) || ~isempty(group2)
+0023             h = ttest2(group1,group2);
+0024             <span class="keyword">if</span> ~isnan(h)
+0025                 sigCon(y,x) = h;
+0026             <span class="keyword">end</span>
+0027         <span class="keyword">end</span>
+0028     <span class="keyword">end</span>
+0029 <span class="keyword">end</span>
+0030 
+0031 
+0032 customCMap = <a href="blueWhiteRed.html" class="code" title="function customMap = blueWhiteRed(varargin)">blueWhiteRed</a>(100);
+0033 
+0034 connectivityDiff = nanmean(data2,3) - nanmean(data1,3);
+0035 connectivityDiff(~sigCon) = nan;
+0036 imAlpha=ones(size(connectivityDiff));
+0037 imAlpha(isnan(connectivityDiff))=0;
+0038 imagesc(connectivityDiff,<span class="string">'AlphaData'</span>,imAlpha,cLim);
+0039 set(gca,<span class="string">'color'</span>,0.5*[1 1 1]);
+0040 xtickangle(60);
+0041 colormap(customCMap);
+0042 s4Pos = get(ax,<span class="string">'position'</span>);
+0043 colorbar;
+0044 set(ax,<span class="string">'Position'</span>,s4Pos);
+0045 title(<span class="string">'Connectivity diff (pre-post)'</span>);
+0046 xtickLoc = 0.5:(size(data1,1)-0.5);
+0047 set(gca,<span class="string">'XTick'</span>,xtickLoc);
+0048 set(gca,<span class="string">'YTick'</span>,(1:size(data1,1)));
+0049 set(gca,<span class="string">'XTickLabel'</span>,labels)
+0050 set(gca,<span class="string">'YTickLabel'</span>,labels)
+0051 set(gca,<span class="string">'TickLength'</span>,[0 0])
+0052 set(gca, <span class="string">'FontSize'</span>, 7);
+0053 xlim([0.5 (size(data1,1)+0.5)]);
+0054 ylim([0.5 (size(data1,1)+0.5)]);
+0055 <span class="keyword">end</span>
+0056</pre></div>
+<hr><address>Generated on Fri 28-Dec-2018 21:42:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

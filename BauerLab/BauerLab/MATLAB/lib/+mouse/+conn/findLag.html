@@ -1,0 +1,271 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of findLag</title>
+  <meta name="keywords" content="findLag">
+  <meta name="description" content="findLag Calculates cross covariance and finds the peak to obtain lag.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">BauerLab</a> &gt; <a href="#">MATLAB</a> &gt; <a href="#">lib</a> &gt; <a href="#">+mouse</a> &gt; <a href="index.html">+conn</a> &gt; findLag.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for BauerLab\MATLAB\lib\+mouse\+conn&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>findLag
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>findLag Calculates cross covariance and finds the peak to obtain lag.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>function [lagTime,lagAmp,covResult,sign] = findLag(data1,data2,varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">findLag Calculates cross covariance and finds the peak to obtain lag.
+   There is also the option to use quadratic fit to get the lag time.
+       data1 = time series, 1D
+       data2 = time series, 1D
+       quadFitUse (optional) = whether to use quadratic fitting (default =
+       true)
+       positiveSignOnly (optional) = whether to ignore negative xcorr values (default = true)
+       validRange (optional) = How many data points to consider from zero
+       lag. For example, 3 would mean looking at 7 points around zero lag.
+       Empty implies default. (default = all values considered)
+       edgeLen (optional) = data points to actually consider in quadratic fit.
+       If zero, then quadratic fit isn't used.
+       (default = 3)
+       corrThr (optional) = the threshold at which correlation is considered
+       significant. (default = 0.3)
+   Output:
+       lagTime = if positive, data1 lags behind data2.
+       lagAmp = how strong the dependence is.
+       covResult = cross covariance result
+       sign = whether the lag is from positive correlation or negative
+       correlation. (1 = correlation, 0 = anti-correlation)
+
+ (c) 2018 Washington University in St. Louis
+ All Right Reserved
+
+ Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ You may not use this file except in compliance with the License.
+ A copy of the License is available is with the distribution and can also
+ be found at:
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS
+ IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ PURPOSE, OR THAT THE USE OF THE SOFTWARD WILL NOT INFRINGE ANY PATENT
+ COPYRIGHT, TRADEMARK, OR OTHER PROPRIETARY RIGHTS ARE DISCLAIMED. IN NO
+ EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY
+ DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ POSSIBILITY OF SUCH DAMAGE.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [lagTime,lagAmp,covResult,sign] = findLag(data1,data2,varargin)</a>
+0002 <span class="comment">%findLag Calculates cross covariance and finds the peak to obtain lag.</span>
+0003 <span class="comment">%   There is also the option to use quadratic fit to get the lag time.</span>
+0004 <span class="comment">%       data1 = time series, 1D</span>
+0005 <span class="comment">%       data2 = time series, 1D</span>
+0006 <span class="comment">%       quadFitUse (optional) = whether to use quadratic fitting (default =</span>
+0007 <span class="comment">%       true)</span>
+0008 <span class="comment">%       positiveSignOnly (optional) = whether to ignore negative xcorr values (default = true)</span>
+0009 <span class="comment">%       validRange (optional) = How many data points to consider from zero</span>
+0010 <span class="comment">%       lag. For example, 3 would mean looking at 7 points around zero lag.</span>
+0011 <span class="comment">%       Empty implies default. (default = all values considered)</span>
+0012 <span class="comment">%       edgeLen (optional) = data points to actually consider in quadratic fit.</span>
+0013 <span class="comment">%       If zero, then quadratic fit isn't used.</span>
+0014 <span class="comment">%       (default = 3)</span>
+0015 <span class="comment">%       corrThr (optional) = the threshold at which correlation is considered</span>
+0016 <span class="comment">%       significant. (default = 0.3)</span>
+0017 <span class="comment">%   Output:</span>
+0018 <span class="comment">%       lagTime = if positive, data1 lags behind data2.</span>
+0019 <span class="comment">%       lagAmp = how strong the dependence is.</span>
+0020 <span class="comment">%       covResult = cross covariance result</span>
+0021 <span class="comment">%       sign = whether the lag is from positive correlation or negative</span>
+0022 <span class="comment">%       correlation. (1 = correlation, 0 = anti-correlation)</span>
+0023 <span class="comment">%</span>
+0024 <span class="comment">% (c) 2018 Washington University in St. Louis</span>
+0025 <span class="comment">% All Right Reserved</span>
+0026 <span class="comment">%</span>
+0027 <span class="comment">% Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+0028 <span class="comment">% You may not use this file except in compliance with the License.</span>
+0029 <span class="comment">% A copy of the License is available is with the distribution and can also</span>
+0030 <span class="comment">% be found at:</span>
+0031 <span class="comment">%</span>
+0032 <span class="comment">% http://www.apache.org/licenses/LICENSE-2.0</span>
+0033 <span class="comment">%</span>
+0034 <span class="comment">% THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS</span>
+0035 <span class="comment">% IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,</span>
+0036 <span class="comment">% THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR</span>
+0037 <span class="comment">% PURPOSE, OR THAT THE USE OF THE SOFTWARD WILL NOT INFRINGE ANY PATENT</span>
+0038 <span class="comment">% COPYRIGHT, TRADEMARK, OR OTHER PROPRIETARY RIGHTS ARE DISCLAIMED. IN NO</span>
+0039 <span class="comment">% EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY</span>
+0040 <span class="comment">% DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL</span>
+0041 <span class="comment">% DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS</span>
+0042 <span class="comment">% OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)</span>
+0043 <span class="comment">% HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,</span>
+0044 <span class="comment">% STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN</span>
+0045 <span class="comment">% ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE</span>
+0046 <span class="comment">% POSSIBILITY OF SUCH DAMAGE.</span>
+0047 
+0048 <span class="keyword">if</span> nargin &gt; 2
+0049     quadFitUse = varargin{1};
+0050 <span class="keyword">else</span>
+0051     quadFitUse = true;
+0052 <span class="keyword">end</span>
+0053 
+0054 <span class="keyword">if</span> nargin &gt; 3
+0055     positiveSignOnly = varargin{2};
+0056 <span class="keyword">else</span>
+0057     positiveSignOnly = true;
+0058 <span class="keyword">end</span>
+0059 
+0060 <span class="keyword">if</span> nargin &gt; 4
+0061     validRange = varargin{3};
+0062 <span class="keyword">else</span>
+0063     validRange = numel(data1);
+0064 <span class="keyword">end</span>
+0065 
+0066 <span class="keyword">if</span> isempty(validRange)
+0067     validRange = numel(data1);
+0068 <span class="keyword">end</span>
+0069 
+0070 <span class="keyword">if</span> nargin &gt; 5
+0071     edgeLen = varargin{4};
+0072 <span class="keyword">else</span>
+0073     edgeLen = 3;
+0074 <span class="keyword">end</span>
+0075 
+0076 <span class="keyword">if</span> nargin &gt; 6
+0077     corrThr = varargin{5};
+0078 <span class="keyword">else</span>
+0079     corrThr = 0.3;
+0080 <span class="keyword">end</span>
+0081 
+0082 <span class="keyword">if</span> edgeLen == 0 <span class="comment">% if the number of data in edge is zero</span>
+0083     quadFitUse = false; <span class="comment">% just don't quadratic fit</span>
+0084 <span class="keyword">end</span>
+0085 
+0086 <span class="comment">% unifying input data format to column vector</span>
+0087 <span class="keyword">if</span> size(data1,1) ~= 1
+0088     data1 = data1';
+0089 <span class="keyword">end</span>
+0090 <span class="keyword">if</span> size(data2,1) ~= 1
+0091     data2 = data2';
+0092 <span class="keyword">end</span>
+0093 
+0094 <span class="comment">% cross correlation</span>
+0095 [covResult,lags] = xcov(data1,data2,validRange,<span class="string">'coeff'</span>); <span class="comment">% how much data1 lags behind data2</span>
+0096 
+0097 <span class="comment">% vectorize cross correlation</span>
+0098 covResult = covResult(:);
+0099 lags = lags(:);
+0100 
+0101 <span class="comment">% find peaks</span>
+0102 posCov = covResult;
+0103 posCov(posCov &lt; 0) = 0;
+0104 [posExtrema, posExtremaLoc] = findpeaks(posCov);
+0105 
+0106 <span class="keyword">if</span> positiveSignOnly
+0107     negExtrema = [];
+0108     negExtremaLoc = [];
+0109 <span class="keyword">else</span>
+0110     negCov = -covResult;
+0111     negCov(negCov &lt; 0) = 0;
+0112     [negExtrema, negExtremaLoc] = findpeaks(negCov);
+0113 <span class="keyword">end</span>
+0114 
+0115 <span class="comment">% find the highest peaks in both positive and negative</span>
+0116 posExtremaInd = find(posExtrema == max(posExtrema),1);
+0117 negExtremaInd = find(negExtrema == max(negExtrema),1);
+0118 posExtrema = posExtrema(posExtremaInd);
+0119 posExtremaLoc = posExtremaLoc(posExtremaInd);
+0120 negExtrema = negExtrema(negExtremaInd);
+0121 negExtremaLoc = negExtremaLoc(negExtremaInd);
+0122 
+0123 <span class="comment">% choose positive or negative peak</span>
+0124 <span class="keyword">if</span> numel(negExtrema)&gt;0 &amp;&amp; numel(posExtrema)&gt;0
+0125     <span class="keyword">if</span> posExtrema &gt;= negExtrema
+0126         peakInd = posExtremaLoc;
+0127         sign = 1;
+0128     <span class="keyword">else</span>
+0129         peakInd = negExtremaLoc;
+0130         sign = 0;
+0131     <span class="keyword">end</span>
+0132 <span class="keyword">elseif</span> numel(posExtrema)&gt;0
+0133     peakInd = posExtremaLoc;
+0134     sign = 1;
+0135 <span class="keyword">elseif</span> numel(negExtrema)&gt;0
+0136     peakInd = negExtremaLoc;
+0137     sign = 0;
+0138 <span class="keyword">else</span>
+0139     peakInd = NaN;
+0140     sign = NaN;
+0141 <span class="keyword">end</span>
+0142 
+0143 <span class="comment">% get the lag time and amplitude</span>
+0144 <span class="keyword">if</span> isnan(peakInd)
+0145     lagTime = NaN;
+0146     lagAmp = NaN;
+0147 <span class="keyword">else</span>
+0148     <span class="keyword">if</span> quadFitUse
+0149         <span class="comment">% find the length of edges to look at for polyfit (edge cases</span>
+0150         <span class="comment">% considered)</span>
+0151         leftEdge = edgeLen;
+0152         <span class="keyword">if</span> peakInd &lt; edgeLen+1
+0153             leftEdge = peakInd - 1;
+0154         <span class="keyword">end</span>
+0155         rightEdge = edgeLen;
+0156         <span class="keyword">if</span> numel(covResult) - peakInd &lt; edgeLen+1
+0157             rightEdge = numel(covResult) - peakInd;
+0158         <span class="keyword">end</span>
+0159         
+0160         <span class="comment">% quadratic fit</span>
+0161         lagInd = lags(peakInd-leftEdge:peakInd+rightEdge);
+0162         lagInd = lagInd - lagInd(1);
+0163         [~,~,peakX,peakY] = mouse.math.quadFit(lagInd,covResult(peakInd-leftEdge:peakInd+rightEdge));
+0164         peakX = peakX + lags(peakInd-leftEdge);
+0165     <span class="keyword">else</span>
+0166         peakX = lags(peakInd);
+0167         peakY = covResult(peakInd);
+0168     <span class="keyword">end</span>
+0169     
+0170     lagTime = peakX;
+0171     lagAmp = peakY;
+0172 <span class="keyword">end</span>
+0173 
+0174 <span class="comment">% if lag amplitude isn't significant enough, the lag does not exist.</span>
+0175 <span class="keyword">if</span> abs(lagAmp) &lt; corrThr
+0176     lagTime = NaN;
+0177 <span class="keyword">end</span>
+0178 
+0179 <span class="keyword">end</span>
+0180</pre></div>
+<hr><address>Generated on Fri 28-Dec-2018 21:42:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

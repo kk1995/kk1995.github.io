@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of rmvHbAbsLen</title>
+  <meta name="keywords" content="rmvHbAbsLen">
+  <meta name="description" content="rmvHbAbs Removes absorption by hemoglobin (cm*M)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">BauerLab</a> &gt; <a href="#">MATLAB</a> &gt; <a href="#">lib</a> &gt; <a href="#">+mouse</a> &gt; <a href="index.html">+expSpecific</a> &gt; rmvHbAbsLen.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for BauerLab\MATLAB\lib\+mouse\+expSpecific&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>rmvHbAbsLen
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>rmvHbAbs Removes absorption by hemoglobin (cm*M)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>function [fluorDataHbAbsRemoved, fraction] = rmvHbAbsLen(fluorData,hbOData,hbRData,hbOAbsCoeff,hbRAbsCoeff) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">rmvHbAbs Removes absorption by hemoglobin (cm*M)
+   Inputs:
+       fluorData = 1D fluorescence data
+       hbOData = 1D HbO change data (cm*M)
+       hbRData = 1D HbR change data (cm*M)
+       hbOAbsCoeff = 1x2 HbO absorption coefficient for two wavelengths
+       hbRAbsCoeff = 1x2 HbR absorption coefficient for two wavelengths
+   Outputs:
+       fluorDataHbAbsRemoved = 1D fluorescence data with Hb effect removed
+       fraction = ratio of fluorescence with Hb removed compared to
+       original</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [fluorDataHbAbsRemoved, fraction] = rmvHbAbsLen(fluorData,hbOData,hbRData,hbOAbsCoeff,hbRAbsCoeff)</a>
+0002 <span class="comment">%rmvHbAbs Removes absorption by hemoglobin (cm*M)</span>
+0003 <span class="comment">%   Inputs:</span>
+0004 <span class="comment">%       fluorData = 1D fluorescence data</span>
+0005 <span class="comment">%       hbOData = 1D HbO change data (cm*M)</span>
+0006 <span class="comment">%       hbRData = 1D HbR change data (cm*M)</span>
+0007 <span class="comment">%       hbOAbsCoeff = 1x2 HbO absorption coefficient for two wavelengths</span>
+0008 <span class="comment">%       hbRAbsCoeff = 1x2 HbR absorption coefficient for two wavelengths</span>
+0009 <span class="comment">%   Outputs:</span>
+0010 <span class="comment">%       fluorDataHbAbsRemoved = 1D fluorescence data with Hb effect removed</span>
+0011 <span class="comment">%       fraction = ratio of fluorescence with Hb removed compared to</span>
+0012 <span class="comment">%       original</span>
+0013 
+0014 muWav1 = hbOData*hbOAbsCoeff(1) + hbRData*hbRAbsCoeff(1); <span class="comment">% absorption coefficient with hemoglobin amount taken into account</span>
+0015 muWav2 = hbOData*hbOAbsCoeff(2) + hbRData*hbRAbsCoeff(2);
+0016 
+0017 exponent = muWav1 + muWav2;
+0018 exponent = -exponent;
+0019 fraction = exp(exponent);
+0020 
+0021 fluorDataHbAbsRemoved = fluorData./fraction;
+0022 
+0023 <span class="keyword">end</span>
+0024</pre></div>
+<hr><address>Generated on Fri 28-Dec-2018 21:42:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

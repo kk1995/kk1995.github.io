@@ -1,0 +1,102 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of catByTime</title>
+  <meta name="keywords" content="catByTime">
+  <meta name="description" content="catByTime Takes in array and categorizes it by the time frame">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">BauerLab</a> &gt; <a href="#">MATLAB</a> &gt; <a href="#">lib</a> &gt; <a href="#">+mouse</a> &gt; <a href="index.html">+preprocess</a> &gt; catByTime.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for BauerLab\MATLAB\lib\+mouse\+preprocess&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>catByTime
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>catByTime Takes in array and categorizes it by the time frame</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>function catData = catByTime(data,time,timeBounds) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">catByTime Takes in array and categorizes it by the time frame
+   In addition to the data, timeBounds variable is given which is a 2xn
+   array that provides the time to start and end.
+   If there is any data with time greater than or less than any of the
+   bounds given, then the modulus of the time is used to place in
+   timeBounds categories.
+   timeBounds is used such that the lower boundary is inclusive and upper
+   boundary is exclusive (lower &lt;= x &lt; upper)
+
+   Inputs:
+       data = nD array. Last dim should be time
+       time = vector showing time at each time ind
+       timeBounds = 2xn array showing time boundaries to be used for
+       categorization</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function catData = catByTime(data,time,timeBounds)</a>
+0002 <span class="comment">%catByTime Takes in array and categorizes it by the time frame</span>
+0003 <span class="comment">%   In addition to the data, timeBounds variable is given which is a 2xn</span>
+0004 <span class="comment">%   array that provides the time to start and end.</span>
+0005 <span class="comment">%   If there is any data with time greater than or less than any of the</span>
+0006 <span class="comment">%   bounds given, then the modulus of the time is used to place in</span>
+0007 <span class="comment">%   timeBounds categories.</span>
+0008 <span class="comment">%   timeBounds is used such that the lower boundary is inclusive and upper</span>
+0009 <span class="comment">%   boundary is exclusive (lower &lt;= x &lt; upper)</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">%   Inputs:</span>
+0012 <span class="comment">%       data = nD array. Last dim should be time</span>
+0013 <span class="comment">%       time = vector showing time at each time ind</span>
+0014 <span class="comment">%       timeBounds = 2xn array showing time boundaries to be used for</span>
+0015 <span class="comment">%       categorization</span>
+0016 
+0017 dim = size(data);
+0018 dimNum = numel(dim);
+0019 
+0020 <span class="keyword">if</span> size(timeBounds,1) ~= 2
+0021     timeBounds = timeBounds';
+0022 <span class="keyword">end</span>
+0023 <span class="keyword">if</span> size(timeBounds,1) ~=2
+0024     error(<span class="string">'Incorrect matrix size for time bounds.'</span>);
+0025 <span class="keyword">end</span>
+0026 
+0027 boundNum = size(timeBounds,2);
+0028 
+0029 catData = cell(boundNum,1);
+0030 <span class="keyword">for</span> frame = 1:size(data,dimNum)
+0031     dataInd = (frame-1)*prod(dim(1:end-1)) + (1:prod(dim(1:end-1)));
+0032     frameData = data(dataInd);
+0033     frameData = reshape(frameData,dim(1:end-1));
+0034     timeBlock = mod(time(frame),max(timeBounds(:))-min(timeBounds(:)));
+0035     <span class="keyword">if</span> timeBlock &lt; min(timeBounds(:))
+0036         timeBlock = timeBlock + max(timeBounds(:))-min(timeBounds(:));
+0037     <span class="keyword">end</span>
+0038     timeBoundsBool = (timeBlock &gt;= timeBounds(1,:)) &amp; (timeBlock &lt; timeBounds(2,:));
+0039     catData{timeBoundsBool} = cat(dimNum,catData{timeBoundsBool},frameData);
+0040 <span class="keyword">end</span>
+0041 <span class="keyword">end</span>
+0042</pre></div>
+<hr><address>Generated on Fri 28-Dec-2018 21:42:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

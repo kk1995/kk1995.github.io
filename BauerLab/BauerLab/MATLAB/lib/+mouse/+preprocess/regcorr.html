@@ -1,0 +1,227 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of regcorr</title>
+  <meta name="keywords" content="regcorr">
+  <meta name="description" content="regcorr() regresses out a signal from data and returns the">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">BauerLab</a> &gt; <a href="#">MATLAB</a> &gt; <a href="#">lib</a> &gt; <a href="#">+mouse</a> &gt; <a href="index.html">+preprocess</a> &gt; regcorr.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for BauerLab\MATLAB\lib\+mouse\+preprocess&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>regcorr
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>regcorr() regresses out a signal from data and returns the</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>function [data2, R, betaOut]=regcorr(data,hem) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> regcorr() regresses out a signal from data and returns the
+ post-regression data as well as the correlation coefficient of the input
+ regressor with every channel in the data. If y_{r} is the signal to be
+ regressed out and y_{in} is a data time trace (either source-detector or
+ imaged), then the output is the least-squares regression: y_{out} =
+ y_{in} - y_{r}(&lt;y_{in},y_{r}&gt;/|y_{r}|^2). Additionally, the correlation
+ coefficient is given by: R=(&lt;y_{in},y_{r}&gt;/(|y_{in}|*|y_{r}|)).
+ 
+ To use regcorr() The syntax is:
+ 
+ [data2 R beta]=regcorr(data,hem)
+ 
+ regcorr() takes two input variables data and hem. This first variable is
+ your data from which you want the signal regressed. It must be an array
+ of two or more dimensions. The last dimension must be time, and the
+ second-to-last dimension must be color/contrast. The other dimensions can
+ be arranged in any order (e.g., source by detector, optode pair, or
+ voxels). regcorr() will then loop over these dimensions as well as the
+ color/contrast dimension.
+ 
+ The second input variable is signal which you want regressed from all the
+ measurements. It must be a two dimensional array with the first dimension
+ being color/contrast, and the second being time. If there is more than
+ one color/contrast (e.g., 750 nm and 850 nm), then the number of
+ contrasts in hem must be the same as in data. In this case, the
+ regression will be contrast-matched, where each color in data will have
+ that specific color's noise regressed out. If hem has only one contrast
+ (i.e., one row), then that time trace will be regressed out of every
+ contrast in data.
+ 
+ regcorr() outputs the variable data2, which is the regressed data. This
+ returned variable has the same array size as the input variable. The
+ second output variable is the correlation coefficients with every
+ channel. It has the same size as the input data array (except without the
+ time dimension). The second output, R is the correlation coefficient
+ between hem and every time trace in data (within a color/contrast). The
+ third output, beta, is the regression coefficient for each source
+ (detector, voxel, etc.). 
+
+ (c) 2009 Washington University in St. Louis
+ All Right Reserved
+
+ Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ You may not use this file except in compliance with the License.
+ A copy of the License is available is with the distribution and can also
+ be found at:
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS
+ IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ PURPOSE, OR THAT THE USE OF THE SOFTWARD WILL NOT INFRINGE ANY PATENT
+ COPYRIGHT, TRADEMARK, OR OTHER PROPRIETARY RIGHTS ARE DISCLAIMED. IN NO
+ EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY
+ DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ POSSIBILITY OF SUCH DAMAGE.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [data2, R, betaOut]=regcorr(data,hem)</a>
+0002 
+0003 <span class="comment">% regcorr() regresses out a signal from data and returns the</span>
+0004 <span class="comment">% post-regression data as well as the correlation coefficient of the input</span>
+0005 <span class="comment">% regressor with every channel in the data. If y_{r} is the signal to be</span>
+0006 <span class="comment">% regressed out and y_{in} is a data time trace (either source-detector or</span>
+0007 <span class="comment">% imaged), then the output is the least-squares regression: y_{out} =</span>
+0008 <span class="comment">% y_{in} - y_{r}(&lt;y_{in},y_{r}&gt;/|y_{r}|^2). Additionally, the correlation</span>
+0009 <span class="comment">% coefficient is given by: R=(&lt;y_{in},y_{r}&gt;/(|y_{in}|*|y_{r}|)).</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% To use regcorr() The syntax is:</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">% [data2 R beta]=regcorr(data,hem)</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% regcorr() takes two input variables data and hem. This first variable is</span>
+0016 <span class="comment">% your data from which you want the signal regressed. It must be an array</span>
+0017 <span class="comment">% of two or more dimensions. The last dimension must be time, and the</span>
+0018 <span class="comment">% second-to-last dimension must be color/contrast. The other dimensions can</span>
+0019 <span class="comment">% be arranged in any order (e.g., source by detector, optode pair, or</span>
+0020 <span class="comment">% voxels). regcorr() will then loop over these dimensions as well as the</span>
+0021 <span class="comment">% color/contrast dimension.</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">% The second input variable is signal which you want regressed from all the</span>
+0024 <span class="comment">% measurements. It must be a two dimensional array with the first dimension</span>
+0025 <span class="comment">% being color/contrast, and the second being time. If there is more than</span>
+0026 <span class="comment">% one color/contrast (e.g., 750 nm and 850 nm), then the number of</span>
+0027 <span class="comment">% contrasts in hem must be the same as in data. In this case, the</span>
+0028 <span class="comment">% regression will be contrast-matched, where each color in data will have</span>
+0029 <span class="comment">% that specific color's noise regressed out. If hem has only one contrast</span>
+0030 <span class="comment">% (i.e., one row), then that time trace will be regressed out of every</span>
+0031 <span class="comment">% contrast in data.</span>
+0032 <span class="comment">%</span>
+0033 <span class="comment">% regcorr() outputs the variable data2, which is the regressed data. This</span>
+0034 <span class="comment">% returned variable has the same array size as the input variable. The</span>
+0035 <span class="comment">% second output variable is the correlation coefficients with every</span>
+0036 <span class="comment">% channel. It has the same size as the input data array (except without the</span>
+0037 <span class="comment">% time dimension). The second output, R is the correlation coefficient</span>
+0038 <span class="comment">% between hem and every time trace in data (within a color/contrast). The</span>
+0039 <span class="comment">% third output, beta, is the regression coefficient for each source</span>
+0040 <span class="comment">% (detector, voxel, etc.).</span>
+0041 <span class="comment">%</span>
+0042 <span class="comment">% (c) 2009 Washington University in St. Louis</span>
+0043 <span class="comment">% All Right Reserved</span>
+0044 <span class="comment">%</span>
+0045 <span class="comment">% Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+0046 <span class="comment">% You may not use this file except in compliance with the License.</span>
+0047 <span class="comment">% A copy of the License is available is with the distribution and can also</span>
+0048 <span class="comment">% be found at:</span>
+0049 <span class="comment">%</span>
+0050 <span class="comment">% http://www.apache.org/licenses/LICENSE-2.0</span>
+0051 <span class="comment">%</span>
+0052 <span class="comment">% THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS</span>
+0053 <span class="comment">% IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,</span>
+0054 <span class="comment">% THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR</span>
+0055 <span class="comment">% PURPOSE, OR THAT THE USE OF THE SOFTWARD WILL NOT INFRINGE ANY PATENT</span>
+0056 <span class="comment">% COPYRIGHT, TRADEMARK, OR OTHER PROPRIETARY RIGHTS ARE DISCLAIMED. IN NO</span>
+0057 <span class="comment">% EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY</span>
+0058 <span class="comment">% DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL</span>
+0059 <span class="comment">% DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS</span>
+0060 <span class="comment">% OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)</span>
+0061 <span class="comment">% HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,</span>
+0062 <span class="comment">% STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN</span>
+0063 <span class="comment">% ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE</span>
+0064 <span class="comment">% POSSIBILITY OF SUCH DAMAGE.</span>
+0065 
+0066 [data, Sin, Sout]=datacondition(data,2); <span class="comment">% reshape to meas x color x time</span>
+0067 [hem, Hin, Hout]=datacondition(hem,2); <span class="comment">% reshape to color x time</span>
+0068 
+0069 <span class="comment">% check compatibility</span>
+0070 <span class="keyword">if</span> Hout(end)~=Sout(end)
+0071     error(<span class="string">'** Your data and regressor do not have the same time length: perhaps check your Resampling Tolerance Flag **'</span>)
+0072 <span class="keyword">end</span>
+0073 
+0074 betaOut = [];
+0075 
+0076 <span class="keyword">if</span> numel(Sout)==3 <span class="comment">% normal case</span>
+0077     L=Sout(1);
+0078     C=Sout(2);
+0079     T=Sout(3);
+0080     
+0081     data2=zeros(T,C,L);
+0082     R=zeros(L,C);
+0083     
+0084     <span class="keyword">for</span> c=1:C
+0085         temp=squeeze(data(:,c,:))'; <span class="comment">% get single color/contrast time x voxel</span>
+0086         g=hem(c,:)'; <span class="comment">% regressor/noise signal in correct orientation time x 1</span>
+0087         gp=pinv(g); <span class="comment">% pseudoinverse for least-square regression 1 x time</span>
+0088         beta=gp*temp; <span class="comment">% regression coefficient 1 x voxel</span>
+0089         betaOut = [betaOut; beta];
+0090         data2(:,c,:)=temp-g*beta; <span class="comment">% linear regression</span>
+0091         R(:,c)=normRow(g')*normCol(temp); <span class="comment">% correlation coefficient</span>
+0092     <span class="keyword">end</span>
+0093     data2=permute(data2,[3 2 1]); <span class="comment">% switch dimensions back to correct order</span>
+0094     R=reshape(R,Sin(1:(end-1))); <span class="comment">% reshape to original size (minus time)</span>
+0095     
+0096 <span class="keyword">elseif</span> numel(Sout)==2 <span class="comment">% special case of one data trace</span>
+0097     C=Sout(1);
+0098     T=Sout(2);
+0099 
+0100     data2=zeros(C,T);
+0101     R=zeros(1,C);
+0102     
+0103     <span class="keyword">for</span> c=1:C
+0104         temp=squeeze(data(c,:))';
+0105         
+0106         g=hem(c,:)';
+0107         gp=pinv(g);
+0108         beta=gp*temp;
+0109         betaOut = [betaOut; beta];
+0110         data2(c,:)=temp-g*beta;
+0111         
+0112         R(c)=normRow(g')*normCol(temp);
+0113     <span class="keyword">end</span>
+0114     
+0115 <span class="keyword">end</span>
+0116 
+0117 data2=reshape(data2,Sin); <span class="comment">% reshape to original shape</span>
+0118 
+0119 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Fri 28-Dec-2018 21:42:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getHbOpticalProperties</title>
+  <meta name="keywords" content="getHbOpticalProperties">
+  <meta name="description" content="getHbOpticalProperties Obtains hemoglobin optical properties">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">BauerLab</a> &gt; <a href="#">MATLAB</a> &gt; <a href="#">parameters</a> &gt; <a href="index.html">+bauerParams</a> &gt; getHbOpticalProperties.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for BauerLab\MATLAB\parameters\+bauerParams&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>getHbOpticalProperties
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>getHbOpticalProperties Obtains hemoglobin optical properties</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function [op, E] = getHbOpticalProperties(lightSourceFiles, extCoeffFile) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> getHbOpticalProperties Obtains hemoglobin optical properties
+   Output:
+       op = optical properties
+       absCoeff = absorption coefficient</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [op, E] = getHbOpticalProperties(lightSourceFiles, extCoeffFile)</a>
+0002 <span class="comment">% getHbOpticalProperties Obtains hemoglobin optical properties</span>
+0003 <span class="comment">%   Output:</span>
+0004 <span class="comment">%       op = optical properties</span>
+0005 <span class="comment">%       absCoeff = absorption coefficient</span>
+0006 
+0007 [lambda1, extCoeff] = mouse.expSpecific.getHbExtCoeff(extCoeffFile); <span class="comment">% Get hemoglobin extinction coefficients</span>
+0008 <span class="comment">% extCoeff is 1/(cm*M)</span>
+0009 
+0010 [sourceSpectra, lambda2] = bauerParams.getSpectra(lightSourceFiles);
+0011 
+0012 op.HbT=76*10^-6; <span class="comment">% M concentration</span>
+0013 op.sO2=0.71; <span class="comment">% Oxygen saturation (%/100)</span>
+0014 op.BV=0.1; <span class="comment">% blood volume (%/100)</span>
+0015 
+0016 op.nin=1.4; <span class="comment">% Internal Index of Refraction</span>
+0017 op.nout=1; <span class="comment">% External Index of Refraction</span>
+0018 op.c=3*10^10/op.nin; <span class="comment">% Speed of Light in the Medium (cm/s)</span>
+0019 op.musp=10; <span class="comment">% Reduced Scattering Coefficient (cm-1)</span>
+0020 
+0021 E = nan(numel(lightSourceFiles),size(extCoeff,2)); <span class="comment">% total extinction</span>
+0022 
+0023 <span class="keyword">for</span> sourceInd = 1:numel(lightSourceFiles)
+0024     
+0025     <span class="comment">% Interpollate from Spectrometer Wavelengths to Reference Wavelengths</span>
+0026     sourceSpectra{sourceInd} = interp1(lambda2,sourceSpectra{sourceInd}.spectrum,lambda1,<span class="string">'pchip'</span>);
+0027     
+0028     <span class="comment">% Subtract Spectrum baseline</span>
+0029     base = mean(sourceSpectra{sourceInd}(1:50));
+0030     sourceSpectra{sourceInd} = sourceSpectra{sourceInd} - base;
+0031     
+0032     <span class="comment">% Normalize</span>
+0033     sourceSpectra{sourceInd} = sourceSpectra{sourceInd}./sum(sourceSpectra{sourceInd});
+0034     
+0035     <span class="comment">% Zero Out Noise</span>
+0036     sourceSpectra{sourceInd}(sourceSpectra{sourceInd}&lt;0.05*max(sourceSpectra{sourceInd}))=0;
+0037         
+0038     <span class="comment">% Spectroscopy Matrix</span>
+0039     E(sourceInd,:)=extCoeff'*sourceSpectra{sourceInd};
+0040     
+0041     conc = op.HbT*[op.sO2 1-op.sO2]; <span class="comment">% concentration of species</span>
+0042     op.dpf(sourceInd) = mouse.physics.diffPathFac(op.c,op.musp,E(sourceInd,:),conc);
+0043 <span class="keyword">end</span>
+0044 
+0045 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Fri 28-Dec-2018 21:42:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

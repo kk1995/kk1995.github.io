@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of excel2FileBauer</title>
+  <meta name="keywords" content="excel2FileBauer">
+  <meta name="description" content="excel2FileBauer Makes file list from excel sheet showing mouse meta info.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">BauerLab</a> &gt; <a href="#">MATLAB</a> &gt; <a href="#">lib</a> &gt; <a href="#">+mouse</a> &gt; <a href="index.html">+expSpecific</a> &gt; excel2FileBauer.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for BauerLab\MATLAB\lib\+mouse\+expSpecific&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>excel2FileBauer
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>excel2FileBauer Makes file list from excel sheet showing mouse meta info.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>function dataFile = excel2FileBauer(excelFile,dataDir,group) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">excel2FileBauer Makes file list from excel sheet showing mouse meta info.
+Specific to Bauer lab.
+   excelFile = the directory of excel file, including file name
+   dataDir = the folder where data actually is. Not including file name
+   group = the experimental group that you actually care about</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function dataFile = excel2FileBauer(excelFile,dataDir,group)</a>
+0002 <span class="comment">%excel2FileBauer Makes file list from excel sheet showing mouse meta info.</span>
+0003 <span class="comment">%Specific to Bauer lab.</span>
+0004 <span class="comment">%   excelFile = the directory of excel file, including file name</span>
+0005 <span class="comment">%   dataDir = the folder where data actually is. Not including file name</span>
+0006 <span class="comment">%   group = the experimental group that you actually care about</span>
+0007 
+0008 [~,~,rawData] = xlsread(excelFile);
+0009 
+0010 <span class="comment">% find where 'Group' column is</span>
+0011 colInd = find(strcmp(rawData(1,:),<span class="string">'Group'</span>),1);
+0012 
+0013 <span class="comment">% group array</span>
+0014 groupArray = rawData(:,colInd);
+0015 groupBool = false(size(groupArray));
+0016 <span class="keyword">for</span> grpInd = 1:numel(group)
+0017     groupBool = (groupBool | logical(strcmp(groupArray,group{grpInd})));
+0018 <span class="keyword">end</span>
+0019 groupBool = find(groupBool);
+0020 
+0021 <span class="comment">% find where 'Date' column is</span>
+0022 dateInd = find(strcmp(rawData(1,:),<span class="string">'Date'</span>),1);
+0023 
+0024 <span class="comment">% find where 'Mouse' column is</span>
+0025 mouseInd = find(strcmp(rawData(1,:),<span class="string">'Mouse'</span>),1);
+0026 
+0027 <span class="comment">% find where 'Session type' column is</span>
+0028 sessionInd = find(strcmp(rawData(1,:),<span class="string">'Session type'</span>),1);
+0029 
+0030 <span class="comment">% make relevant file info array</span>
+0031 fileInfo = cell(numel(groupBool),3);
+0032 <span class="keyword">for</span> file = 1:size(fileInfo,1)
+0033     fileInfo{file,1} = rawData{groupBool(file),dateInd};
+0034     fileInfo{file,2} = rawData{groupBool(file),mouseInd};
+0035     sessionType = rawData{groupBool(file),sessionInd};
+0036     sessionType = sessionType(3:end-2);
+0037     fileInfo{file,3} = sessionType;
+0038 <span class="keyword">end</span>
+0039 
+0040 <span class="comment">% get list of files in directory</span>
+0041 fileList = dir(dataDir); fileList(1:2) = [];
+0042 dataFile = {};
+0043 <span class="keyword">for</span> file = 1:size(fileInfo,1)
+0044     fileStr = [fileInfo{file,1} <span class="string">'-'</span> fileInfo{file,2} <span class="string">'-'</span> fileInfo{file,3}];
+0045     <span class="keyword">for</span> file2 = 1:numel(fileList)
+0046         <span class="keyword">if</span> strfind(fileList(file2).name,fileStr)
+0047             dataFile = [dataFile; {fileList(file2).name}];
+0048         <span class="keyword">end</span>
+0049     <span class="keyword">end</span>
+0050 <span class="keyword">end</span>
+0051 
+0052 <span class="keyword">end</span>
+0053</pre></div>
+<hr><address>Generated on Fri 28-Dec-2018 21:42:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

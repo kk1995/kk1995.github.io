@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of filterData</title>
+  <meta name="keywords" content="filterData">
+  <meta name="description" content="filterData Band-pass filters data">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">BauerLab</a> &gt; <a href="#">MATLAB</a> &gt; <a href="#">lib</a> &gt; <a href="#">+mouse</a> &gt; <a href="index.html">+freq</a> &gt; filterData.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for BauerLab\MATLAB\lib\+mouse\+freq&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>filterData
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>filterData Band-pass filters data</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>function filtData = filterData(data,fMin,fMax,sR) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">filterData Band-pass filters data
+   data = nD matrix. last dim is time
+   fMin = minimum frequency
+   fMax = maximum frequency
+   sR = sampling rate</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function filtData = filterData(data,fMin,fMax,sR)</a>
+0002 <span class="comment">%filterData Band-pass filters data</span>
+0003 <span class="comment">%   data = nD matrix. last dim is time</span>
+0004 <span class="comment">%   fMin = minimum frequency</span>
+0005 <span class="comment">%   fMax = maximum frequency</span>
+0006 <span class="comment">%   sR = sampling rate</span>
+0007 
+0008 originalSize = size(data);
+0009 
+0010 <span class="comment">% vectorizes data into n x time</span>
+0011 data = reshape(data,[],originalSize(end));
+0012 
+0013 <span class="comment">% initializes filtered data</span>
+0014 filtData = zeros(size(data));
+0015 
+0016 <span class="comment">% filters for each pixel</span>
+0017 <span class="keyword">for</span> pixel = 1:size(data,1)
+0018     ind = [1 size(data,2)];
+0019     <span class="comment">% select the data. Edges are considered to reduce edge effects.</span>
+0020     edgeLength = round(sR/fMin/2); <span class="comment">% consider at least half the wavelength</span>
+0021     [selectedData, realInd, ~] = mouse.freq.selectWithEdges(squeeze(data(pixel,:)),ind,edgeLength);
+0022     
+0023     <span class="comment">% filter</span>
+0024 <span class="comment">%     filtDataTemp = gaborFilter(selectedData,fMin,fMax,sR);</span>
+0025 <span class="comment">%     filtDataTemp = real(filtDataTemp);</span>
+0026     filtDataTemp = highpass(selectedData,fMin,sR);
+0027     filtDataTemp = lowpass(filtDataTemp,fMax,sR);
+0028     filtDataTemp = filtDataTemp(realInd(1):realInd(2));
+0029     
+0030     filtData(pixel,:) = filtDataTemp;
+0031 <span class="keyword">end</span>
+0032 
+0033 <span class="comment">% reshapes back into original shape</span>
+0034 filtData = reshape(filtData,originalSize);
+0035 <span class="keyword">end</span>
+0036</pre></div>
+<hr><address>Generated on Fri 28-Dec-2018 21:42:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

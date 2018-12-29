@@ -1,0 +1,176 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of plotBrain</title>
+  <meta name="keywords" content="plotBrain">
+  <meta name="description" content="plotBrain Outputs brain mask image with nodes drawn on top of it">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">BauerLab</a> &gt; <a href="#">MATLAB</a> &gt; <a href="#">lib</a> &gt; <a href="#">+mouse</a> &gt; <a href="index.html">+plot</a> &gt; plotBrain.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for BauerLab\MATLAB\lib\+mouse\+plot&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>plotBrain
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>plotBrain Outputs brain mask image with nodes drawn on top of it</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>function [axesList, p] = plotBrain(figH,brainVal,brainMask,varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">plotBrain Outputs brain mask image with nodes drawn on top of it
+   figH = figure handle. If empty a new figure will be created.
+   brainVal = (m x m) matrix showing image value.
+   brainMask = (m x m) matrix showing the mask of the brain (logical)
+   cLim (optional) = (2x1) vector stating the values' color lim (default =
+   [0 1])
+   cMap (optional) = colormap. (default = gray)
+   addColorbar (optional) = whether to add colorbar (default = false)
+   colorbarOffset (optional) = how much to push colorbar to the right
+   (default = 0.03);
+   Output:
+       [axesList, p]
+       axesList = list of figure axes
+       p = handle for image (imagesc)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [axesList, p] = plotBrain(figH,brainVal,brainMask,varargin)</a>
+0002 <span class="comment">%plotBrain Outputs brain mask image with nodes drawn on top of it</span>
+0003 <span class="comment">%   figH = figure handle. If empty a new figure will be created.</span>
+0004 <span class="comment">%   brainVal = (m x m) matrix showing image value.</span>
+0005 <span class="comment">%   brainMask = (m x m) matrix showing the mask of the brain (logical)</span>
+0006 <span class="comment">%   cLim (optional) = (2x1) vector stating the values' color lim (default =</span>
+0007 <span class="comment">%   [0 1])</span>
+0008 <span class="comment">%   cMap (optional) = colormap. (default = gray)</span>
+0009 <span class="comment">%   addColorbar (optional) = whether to add colorbar (default = false)</span>
+0010 <span class="comment">%   colorbarOffset (optional) = how much to push colorbar to the right</span>
+0011 <span class="comment">%   (default = 0.03);</span>
+0012 <span class="comment">%   Output:</span>
+0013 <span class="comment">%       [axesList, p]</span>
+0014 <span class="comment">%       axesList = list of figure axes</span>
+0015 <span class="comment">%       p = handle for image (imagesc)</span>
+0016 
+0017 <span class="keyword">if</span> numel(varargin) &lt; 1
+0018     cLim = [0 1];
+0019 <span class="keyword">else</span>
+0020     cLim = varargin{1};
+0021 <span class="keyword">end</span>
+0022 
+0023 <span class="keyword">if</span> numel(varargin) &lt; 2
+0024     cMap = gray(100);
+0025 <span class="keyword">else</span>
+0026     cMap = varargin{2};
+0027 <span class="keyword">end</span>
+0028 
+0029 <span class="keyword">if</span> numel(varargin) &lt; 3
+0030     addColorbar = false;
+0031 <span class="keyword">else</span>
+0032     addColorbar = varargin{3};
+0033 <span class="keyword">end</span>
+0034 
+0035 <span class="keyword">if</span> numel(varargin) &lt; 4
+0036     colorbarOffset = 0.03;
+0037 <span class="keyword">else</span>
+0038     colorbarOffset = varargin{4};
+0039 <span class="keyword">end</span>
+0040 
+0041 <span class="comment">% make new figure handle if it does not exist.</span>
+0042 <span class="keyword">if</span> isempty(figH)
+0043     figH = figure;
+0044 <span class="keyword">end</span>
+0045 
+0046 <span class="keyword">if</span> contains(class(figH),<span class="string">'Figure'</span>)
+0047     isFig = true;
+0048     dummyAxes = axes;
+0049     axesPosition = dummyAxes.Position;
+0050     set(dummyAxes,<span class="string">'Visible'</span>,<span class="string">'off'</span>);
+0051 <span class="keyword">else</span>
+0052     isFig = false;
+0053     dummyAxes = figH(1);
+0054     axesPosition = dummyAxes.Position;
+0055 <span class="comment">%     set(dummyAxes,'Visible','off');</span>
+0056 <span class="keyword">end</span>
+0057 
+0058 <span class="comment">% make new axes for imagesc of mask</span>
+0059 hAxesMask = axes;
+0060 set(hAxesMask,<span class="string">'Position'</span>,axesPosition);
+0061 
+0062 <span class="comment">% plot mask</span>
+0063 <span class="keyword">if</span> numel(size(brainVal)) == 3
+0064     p = imshow(brainVal);
+0065     set(p, <span class="string">'AlphaData'</span>, brainMask);
+0066 <span class="keyword">else</span>
+0067     p = imagesc(brainVal,<span class="string">'AlphaData'</span>,brainMask,cLim);
+0068 <span class="keyword">end</span>
+0069 xlim([1 size(brainMask,1)]);
+0070 ylim([1 size(brainMask,2)]);
+0071 set(hAxesMask,<span class="string">'Visible'</span>,<span class="string">'off'</span>);
+0072 colormap(hAxesMask,cMap);
+0073 axis(hAxesMask,<span class="string">'square'</span>);
+0074 
+0075 <span class="keyword">if</span> addColorbar
+0076     <span class="comment">% make another axes just for colorbar</span>
+0077     hAxesBar = axes;
+0078     set(hAxesBar,<span class="string">'Position'</span>,axesPosition);
+0079     set(hAxesBar,<span class="string">'Visible'</span>,<span class="string">'off'</span>);
+0080     axis(hAxesBar,<span class="string">'square'</span>);
+0081     barPos = get(hAxesBar,<span class="string">'position'</span>);
+0082     
+0083     <span class="comment">% brain mask lim</span>
+0084     maskLimY = sum(brainMask,2) &gt; 0;
+0085     maskLimY = [size(brainMask,1)-find(maskLimY,1,<span class="string">'last'</span>)+1 size(brainMask,1)-find(maskLimY,1,<span class="string">'first'</span>)+1];
+0086     maskLimY = (maskLimY-1)./(size(brainMask,1)-1);
+0087     
+0088     axesYSize = barPos(4);
+0089     
+0090     barPos(1) = barPos(1) + colorbarOffset;
+0091     barPos(3) = barPos(3) + colorbarOffset;
+0092     barPos(2) = barPos(2)+barPos(4)*maskLimY(1);
+0093     barPos(4) = barPos(4)*maskLimY(2);
+0094     cbh = colorbar;
+0095     colormap(hAxesBar,cMap);
+0096     caxis(hAxesBar,cLim);
+0097     set(hAxesBar,<span class="string">'Position'</span>,barPos);
+0098     set(cbh,<span class="string">'YTick'</span>,linspace(cLim(1),cLim(2),5))
+0099     linkaxes([dummyAxes,hAxesMask, hAxesBar]);
+0100     <span class="keyword">if</span> isFig
+0101         axesList = [dummyAxes hAxesMask hAxesBar];
+0102     <span class="keyword">else</span>
+0103         axesList = [figH hAxesMask hAxesBar];
+0104     <span class="keyword">end</span>
+0105 <span class="keyword">else</span>
+0106     <span class="comment">%link the two overlaying axes so they match at all times to remain accurate</span>
+0107     linkaxes([dummyAxes,hAxesMask]);
+0108     <span class="keyword">if</span> isFig
+0109         axesList = [dummyAxes hAxesMask];
+0110     <span class="keyword">else</span>
+0111         axesList = [figH hAxesMask];
+0112     <span class="keyword">end</span>
+0113 <span class="keyword">end</span>
+0114 
+0115 <span class="keyword">end</span>
+0116</pre></div>
+<hr><address>Generated on Fri 28-Dec-2018 21:42:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

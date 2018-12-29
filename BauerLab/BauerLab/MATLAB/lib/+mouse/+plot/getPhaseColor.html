@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getPhaseColor</title>
+  <meta name="keywords" content="getPhaseColor">
+  <meta name="description" content="GETPHASECOLOR Summary of this function goes here">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">BauerLab</a> &gt; <a href="#">MATLAB</a> &gt; <a href="#">lib</a> &gt; <a href="#">+mouse</a> &gt; <a href="index.html">+plot</a> &gt; getPhaseColor.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for BauerLab\MATLAB\lib\+mouse\+plot&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>getPhaseColor
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>GETPHASECOLOR Summary of this function goes here</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>function [ mcol ] = getPhaseColor( varargin ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">GETPHASECOLOR Summary of this function goes here
+   Detailed explanation goes here</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [ mcol ] = getPhaseColor( varargin )</a>
+0002 <span class="comment">%GETPHASECOLOR Summary of this function goes here</span>
+0003 <span class="comment">%   Detailed explanation goes here</span>
+0004 
+0005 bin_num = 18;
+0006 <span class="keyword">if</span> nargin &gt; 0
+0007     bin_num = varargin{1};
+0008 <span class="keyword">end</span>
+0009 <span class="comment">% Original</span>
+0010 <span class="comment">% mcol = distinguishable_colors(dStep);</span>
+0011 <span class="comment">% mcol = [0.*flipud([1:-1/dStep:1/dStep]'),1.*([1:-1/dStep:1/dStep]'),.9.*flipud([1:-1/dStep:1/dStep]')];</span>
+0012 <span class="comment">% mcol = [mcol(15:end,:);mcol(1:14,:)]</span>
+0013 
+0014 dStep_half = bin_num/2;
+0015 <span class="comment">% Green and Blue</span>
+0016 <span class="comment">% col_leftEnd = [3 192 20 ]./255;</span>
+0017 <span class="comment">% col_rightEnd = [50  120 223]./255;</span>
+0018 
+0019 <span class="comment">% Red and Blue</span>
+0020 col_leftEnd = [255 0 0 ]./255;
+0021 col_rightEnd = [0  0 225]./255;
+0022 
+0023 col_step = ((col_rightEnd - col_leftEnd)'*flipud([1:-1/dStep_half:1/dStep_half]))';
+0024 <span class="keyword">for</span> i = 1:3
+0025     mcol(:,i) = col_leftEnd(1,i).*ones(dStep_half,1) + col_step(:,i);
+0026 <span class="keyword">end</span>
+0027 
+0028 mcol = [mcol; flipud(mcol)];
+0029 
+0030 <span class="comment">% % Rainbow Color</span>
+0031 mcol = hsv(18);
+0032 mcol = [mcol(9:18,:); mcol(1:8,:)];
+0033 <span class="keyword">end</span>
+0034</pre></div>
+<hr><address>Generated on Fri 28-Dec-2018 21:42:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

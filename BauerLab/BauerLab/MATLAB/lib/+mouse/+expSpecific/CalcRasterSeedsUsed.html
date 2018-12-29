@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of CalcRasterSeedsUsed</title>
+  <meta name="keywords" content="CalcRasterSeedsUsed">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">BauerLab</a> &gt; <a href="#">MATLAB</a> &gt; <a href="#">lib</a> &gt; <a href="#">+mouse</a> &gt; <a href="index.html">+expSpecific</a> &gt; CalcRasterSeedsUsed.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for BauerLab\MATLAB\lib\+mouse\+expSpecific&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>CalcRasterSeedsUsed
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>function [SeedsUsed]=CalcRasterSeedsUsed(isbrain) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [SeedsUsed]=CalcRasterSeedsUsed(isbrain)</a>
+0002 
+0003 nVx=size(isbrain, 1);
+0004 
+0005 Xdim=linspace(1,nVx/2,nVx/2);
+0006 Ydim=linspace(1,nVx,nVx);
+0007 
+0008 [X Y]=meshgrid(Xdim, Ydim);
+0009 X1=reshape(X,[],1);
+0010 Y1=reshape(Y,[],1);
+0011 Seeds.L(:,:)=[X1 Y1];
+0012 
+0013 Xdim=linspace(nVx,nVx-nVx/2+1,nVx/2);
+0014 Ydim=linspace(1,nVx,nVx);
+0015 
+0016 [X Y]=meshgrid(Xdim, Ydim);
+0017 X1=reshape(X,[],1);
+0018 Y1=reshape(Y,[],1);
+0019 Seeds.R(:,:)=[X1 Y1];
+0020 
+0021 Numseeds=size(Seeds.L,1);
+0022 RasterSeeds=zeros(2*Numseeds,2);
+0023 
+0024 <span class="keyword">for</span> f=1:Numseeds
+0025     RasterSeeds(2*f-1,1)=Seeds.R(f,1);
+0026     RasterSeeds(2*f-1,2)=Seeds.R(f,2);
+0027     RasterSeeds(2*f,1)=Seeds.L(f,1);
+0028     RasterSeeds(2*f,2)=Seeds.L(f,2);
+0029 <span class="keyword">end</span>
+0030 
+0031 SeedsUsed=[];
+0032 m=1;
+0033 
+0034 <span class="keyword">for</span> n=1:2:size(RasterSeeds,1)-1; 
+0035     <span class="keyword">if</span> isbrain(RasterSeeds(n,2),RasterSeeds(n,1))==1 &amp;&amp; isbrain(RasterSeeds(n+1,2),RasterSeeds(n+1,1))==1; 
+0036         SeedsUsed(m,:)=RasterSeeds(n,:); 
+0037         SeedsUsed(m+1,:)=RasterSeeds(n+1,:); 
+0038         m=m+2;
+0039     <span class="keyword">end</span>; 
+0040 <span class="keyword">end</span>
+0041 
+0042 <span class="comment">% imagesc(fig);</span>
+0043 <span class="comment">%</span>
+0044 <span class="comment">% m=1;</span>
+0045 <span class="comment">%</span>
+0046 <span class="comment">% for f=1:size(SeedsUsed,1)</span>
+0047 <span class="comment">%    hold on;</span>
+0048 <span class="comment">%    plot(SeedsUsed(f,1),SeedsUsed(f,2),'ko','MarkerFaceColor','k')</span>
+0049 <span class="comment">% end</span>
+0050 
+0051 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Fri 28-Dec-2018 21:42:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

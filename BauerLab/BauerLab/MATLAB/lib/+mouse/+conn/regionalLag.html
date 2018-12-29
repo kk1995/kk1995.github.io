@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of regionalLag</title>
+  <meta name="keywords" content="regionalLag">
+  <meta name="description" content="regionalFC finds the connectivity of the ROI with the rest">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">BauerLab</a> &gt; <a href="#">MATLAB</a> &gt; <a href="#">lib</a> &gt; <a href="#">+mouse</a> &gt; <a href="index.html">+conn</a> &gt; regionalLag.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for BauerLab\MATLAB\lib\+mouse\+conn&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>regionalLag
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>regionalFC finds the connectivity of the ROI with the rest</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>function [lagDataTime, lagDataAmp] = regionalLag(data,mask,fRange,sR,roi,validInd,edgeLen,corrThr) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> regionalFC finds the connectivity of the ROI with the rest
+   inputs:
+       data = 3D matrix. (spatial x spatial x time)
+       roi = indices of the roi
+       validInd = valid indices at which lag time is justified. cell array</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [lagDataTime, lagDataAmp] = regionalLag(data,mask,fRange,sR,roi,validInd,edgeLen,corrThr)</a>
+0002 <span class="comment">% regionalFC finds the connectivity of the ROI with the rest</span>
+0003 <span class="comment">%   inputs:</span>
+0004 <span class="comment">%       data = 3D matrix. (spatial x spatial x time)</span>
+0005 <span class="comment">%       roi = indices of the roi</span>
+0006 <span class="comment">%       validInd = valid indices at which lag time is justified. cell array</span>
+0007 
+0008 lagDataTime = [];
+0009 lagDataAmp = [];
+0010 <span class="keyword">for</span> freq = 1:size(fRange,1)
+0011     fMin = fRange(freq,1);
+0012     fMax = fRange(freq,2);
+0013     
+0014     <span class="comment">%% spectral filter</span>
+0015     filtData = zeros(size(data));
+0016     <span class="comment">% for each spatial and species</span>
+0017     <span class="keyword">for</span> spatDim1 = 1:size(data,1)
+0018         <span class="keyword">for</span> spatDim2 = 1:size(data,2)
+0019             ind = [1 size(data,3)];
+0020             <span class="comment">% select the data. Edges are considered to reduce edge effects.</span>
+0021             edgeLength = round(sR/fMin/2); <span class="comment">% consider at least half the wavelength</span>
+0022             [selectedData, realInd, ~] = mouse.freq.selectWithEdges(squeeze(data(spatDim1,spatDim2,:)),ind,edgeLength);
+0023             
+0024             <span class="comment">% filter</span>
+0025             filtDataTemp = highpass(selectedData,fMin,sR);
+0026             filtDataTemp = lowpass(filtDataTemp,fMax,sR);
+0027             filtDataTemp = filtDataTemp(realInd(1):realInd(2));
+0028             
+0029             filtData(spatDim1,spatDim2,:) = filtDataTemp;
+0030         <span class="keyword">end</span>
+0031     <span class="keyword">end</span>
+0032     
+0033     <span class="comment">%% fc</span>
+0034     filtData = reshape(filtData,size(filtData,1)*size(filtData,2),size(filtData,3));
+0035     roiData = nanmean(filtData(roi,:),1)';
+0036     lagDataTimeFreq = nan(size(data,1),size(data,2));
+0037     lagDataAmpFreq = nan(size(data,1),size(data,2));
+0038     <span class="keyword">for</span> i = 1:size(filtData,1)
+0039         <span class="keyword">if</span> mask(i)
+0040             data2 = filtData(i,:)';
+0041             [lagDataTimeFreq(i), lagDataAmpFreq(i)] = mouse.freq.findLag(roiData,data2,true,false,validInd{freq},edgeLen,corrThr);
+0042         <span class="keyword">end</span>
+0043     <span class="keyword">end</span>
+0044     lagDataTimeFreq = lagDataTimeFreq./sR;
+0045     lagDataTime = cat(3,lagDataTime,lagDataTimeFreq);
+0046     lagDataAmp = cat(3,lagDataAmp,lagDataAmpFreq);
+0047 <span class="keyword">end</span>
+0048 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Fri 28-Dec-2018 21:42:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

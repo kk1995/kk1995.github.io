@@ -1,0 +1,71 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getFC</title>
+  <meta name="keywords" content="getFC">
+  <meta name="description" content="getFC produces functional connectivity matrix from data">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">BauerLab</a> &gt; <a href="#">MATLAB</a> &gt; <a href="#">lib</a> &gt; <a href="#">+mouse</a> &gt; <a href="index.html">+conn</a> &gt; getFC.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for BauerLab\MATLAB\lib\+mouse\+conn&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>getFC
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>getFC produces functional connectivity matrix from data</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>function fcMatrix = getFC(data) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">getFC produces functional connectivity matrix from data
+   Inputs:
+       data = nD matrix as long as last dim is time
+   Outputs:
+       fcMatrix = m x m matrix where m is product of all dimensions of
+       data except last one. Pearson's correlation (-1 to 1)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function fcMatrix = getFC(data)</a>
+0002 <span class="comment">%getFC produces functional connectivity matrix from data</span>
+0003 <span class="comment">%   Inputs:</span>
+0004 <span class="comment">%       data = nD matrix as long as last dim is time</span>
+0005 <span class="comment">%   Outputs:</span>
+0006 <span class="comment">%       fcMatrix = m x m matrix where m is product of all dimensions of</span>
+0007 <span class="comment">%       data except last one. Pearson's correlation (-1 to 1)</span>
+0008 
+0009 dataSize = size(data);
+0010 data = reshape(data,[],dataSize(end));
+0011 
+0012 covMat = data*data';
+0013 stdVal = std(data,[],2);
+0014 stdMat = stdVal*stdVal';
+0015 
+0016 fcMatrix = covMat./stdMat;
+0017 fcMatrix = fcMatrix./max(fcMatrix(:)); <span class="comment">% normalize</span>
+0018 <span class="keyword">end</span>
+0019</pre></div>
+<hr><address>Generated on Fri 28-Dec-2018 21:42:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

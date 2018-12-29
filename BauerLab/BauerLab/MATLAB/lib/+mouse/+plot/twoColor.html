@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of twoColor</title>
+  <meta name="keywords" content="twoColor">
+  <meta name="description" content="blueWhiteRed Makes custom color map that goes from blue to white to red">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">BauerLab</a> &gt; <a href="#">MATLAB</a> &gt; <a href="#">lib</a> &gt; <a href="#">+mouse</a> &gt; <a href="index.html">+plot</a> &gt; twoColor.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for BauerLab\MATLAB\lib\+mouse\+plot&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>twoColor
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>blueWhiteRed Makes custom color map that goes from blue to white to red</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>function customMap = twoColor(color1,color2,varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">blueWhiteRed Makes custom color map that goes from blue to white to red
+   Input:
+       color1 (1x3)
+       color2 (1x3)
+       dataNum (optional) = number of data points (default = 100)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function customMap = twoColor(color1,color2,varargin)</a>
+0002 <span class="comment">%blueWhiteRed Makes custom color map that goes from blue to white to red</span>
+0003 <span class="comment">%   Input:</span>
+0004 <span class="comment">%       color1 (1x3)</span>
+0005 <span class="comment">%       color2 (1x3)</span>
+0006 <span class="comment">%       dataNum (optional) = number of data points (default = 100)</span>
+0007 
+0008 <span class="keyword">if</span> numel(varargin) &lt; 1
+0009     dataNum = 10;
+0010 <span class="keyword">else</span>
+0011     dataNum = varargin{1};
+0012 <span class="keyword">end</span>
+0013 
+0014 <span class="keyword">if</span> size(color1,1) ~= 1
+0015     color1 = color1';
+0016 <span class="keyword">end</span>
+0017 <span class="keyword">if</span> size(color2,1) ~= 1
+0018     color2 = color2';
+0019 <span class="keyword">end</span>
+0020 
+0021 color = [color1; color2];
+0022 
+0023 topColor = color(2,:);         <span class="comment">% color for maximum data value (red = [1 0 0])</span>
+0024 bottomcolor = color(1,:);      <span class="comment">% color for minimum data value (blue = [0 0 1])</span>
+0025 
+0026 customMap = [linspace(bottomcolor(1),topColor(1),dataNum);<span class="keyword">...</span>
+0027     linspace(bottomcolor(2),topColor(2),dataNum);<span class="keyword">...</span>
+0028     linspace(bottomcolor(3),topColor(3),dataNum)];
+0029 
+0030 customMap = customMap';
+0031 <span class="keyword">end</span>
+0032</pre></div>
+<hr><address>Generated on Fri 28-Dec-2018 21:42:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

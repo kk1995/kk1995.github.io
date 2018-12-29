@@ -1,0 +1,71 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of transformIndSmaller</title>
+  <meta name="keywords" content="transformIndSmaller">
+  <meta name="description" content="transformIndSmaller Transforms indices from bigger space to smaller space">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">BauerLab</a> &gt; <a href="#">MATLAB</a> &gt; <a href="#">lib</a> &gt; <a href="#">+mouse</a> &gt; <a href="index.html">+math</a> &gt; transformIndSmaller.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for BauerLab\MATLAB\lib\+mouse\+math&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>transformIndSmaller
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>transformIndSmaller Transforms indices from bigger space to smaller space</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>function outputIndex = transformIndSmaller(index,transformMat) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">transformIndSmaller Transforms indices from bigger space to smaller space
+   index = the indices in bigger space you are shaping into smaller space
+   transformMat = logical array the size of bigger space specifying which
+   indices are part of the smaller space.
+
+   Assumes that order is retained between bigger space and smaller space</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function outputIndex = transformIndSmaller(index,transformMat)</a>
+0002 <span class="comment">%transformIndSmaller Transforms indices from bigger space to smaller space</span>
+0003 <span class="comment">%   index = the indices in bigger space you are shaping into smaller space</span>
+0004 <span class="comment">%   transformMat = logical array the size of bigger space specifying which</span>
+0005 <span class="comment">%   indices are part of the smaller space.</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   Assumes that order is retained between bigger space and smaller space</span>
+0008 
+0009 transformInd = 1:numel(transformMat);
+0010 outputIndex = nan(size(index));
+0011 <span class="keyword">for</span> i = 1:numel(index)
+0012     outputInd = find(transformInd(transformMat) == index(i));
+0013     <span class="keyword">if</span> isempty(outputInd)
+0014     <span class="keyword">else</span>
+0015         outputIndex(i) = outputInd;
+0016     <span class="keyword">end</span>
+0017 <span class="keyword">end</span>
+0018 <span class="keyword">end</span>
+0019</pre></div>
+<hr><address>Generated on Fri 28-Dec-2018 21:42:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

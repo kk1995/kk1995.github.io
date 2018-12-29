@@ -1,0 +1,105 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of plotCluster</title>
+  <meta name="keywords" content="plotCluster">
+  <meta name="description" content="plotCluster Plot cluster locations and their p values">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">BauerLab</a> &gt; <a href="#">MATLAB</a> &gt; <a href="#">lib</a> &gt; <a href="#">+mouse</a> &gt; <a href="index.html">+plot</a> &gt; plotCluster.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for BauerLab\MATLAB\lib\+mouse\+plot&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>plotCluster
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>plotCluster Plot cluster locations and their p values</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>function [axesList] = plotCluster(figH,contour,color,alpha) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">plotCluster Plot cluster locations and their p values
+   inputs:
+       figH
+       contour = mask data (logical)
+       color = color (rgb)
+       alpha = transparency (0 to 1)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [axesList] = plotCluster(figH,contour,color,alpha)</a>
+0002 <span class="comment">%plotCluster Plot cluster locations and their p values</span>
+0003 <span class="comment">%   inputs:</span>
+0004 <span class="comment">%       figH</span>
+0005 <span class="comment">%       contour = mask data (logical)</span>
+0006 <span class="comment">%       color = color (rgb)</span>
+0007 <span class="comment">%       alpha = transparency (0 to 1)</span>
+0008 
+0009 <span class="comment">% make new figure handle if it does not exist.</span>
+0010 <span class="keyword">if</span> isempty(figH)
+0011     figH = figure;
+0012 <span class="keyword">end</span>
+0013 
+0014 <span class="keyword">if</span> contains(class(figH),<span class="string">'Figure'</span>)
+0015     isFig = true;
+0016     dummyAxes = axes;
+0017     axesPosition = dummyAxes.Position;
+0018     set(dummyAxes,<span class="string">'Visible'</span>,<span class="string">'off'</span>);
+0019 <span class="keyword">else</span>
+0020     isFig = false;
+0021     dummyAxes = figH(1);
+0022     axesPosition = dummyAxes.Position;
+0023 <span class="comment">%     set(dummyAxes,'Visible','off');</span>
+0024 <span class="keyword">end</span>
+0025 
+0026 <span class="comment">% make new axes for cluster</span>
+0027 hAxesContour = axes;
+0028 set(hAxesContour,<span class="string">'Position'</span>,axesPosition);
+0029 
+0030 imageData = zeros([size(contour) 3]);
+0031 [row, col] = mouse.plot.ind2D(find(contour),size(contour));
+0032 imageInd = repmat(row+((col-1)*size(contour,1)),3,1);
+0033 imageInd(numel(row)+1:2*numel(row)) = imageInd(numel(row)+1:2*numel(row)) + numel(contour);
+0034 imageInd(2*numel(row)+1:3*numel(row)) = imageInd(2*numel(row)+1:3*numel(row)) + 2*numel(contour);
+0035 imageData(imageInd(1:numel(row))) = color(1);
+0036 imageData(imageInd(numel(row)+1:2*numel(row))) = color(2);
+0037 imageData(imageInd(2*numel(row)+1:3*numel(row))) = color(3);
+0038 
+0039 h = imshow(imageData);
+0040 set(h, <span class="string">'AlphaData'</span>, alpha*contour);
+0041 
+0042 axis(hAxesContour,<span class="string">'square'</span>);
+0043 set(hAxesContour,<span class="string">'Ydir'</span>,<span class="string">'reverse'</span>);
+0044 set(hAxesContour,<span class="string">'Visible'</span>,<span class="string">'off'</span>);
+0045 
+0046 linkaxes([dummyAxes,hAxesContour]);
+0047 <span class="keyword">if</span> isFig
+0048     axesList = [dummyAxes hAxesContour];
+0049 <span class="keyword">else</span>
+0050     axesList = [figH hAxesContour];
+0051 <span class="keyword">end</span>
+0052 <span class="keyword">end</span>
+0053</pre></div>
+<hr><address>Generated on Fri 28-Dec-2018 21:42:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

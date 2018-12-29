@@ -1,0 +1,73 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of procRaw</title>
+  <meta name="keywords" content="procRaw">
+  <meta name="description" content="procRaw Detrends raw data (temporally and spatially)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">BauerLab</a> &gt; <a href="#">MATLAB</a> &gt; <a href="#">lib</a> &gt; <a href="index.html">+gcamp</a> &gt; procRaw.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for BauerLab\MATLAB\lib\+gcamp&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>procRaw
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>procRaw Detrends raw data (temporally and spatially)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function output = procRaw(raw) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">procRaw Detrends raw data (temporally and spatially)
+   output = procRaw(raw)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="gcampImaging.html" class="code" title="function [raw, time, xform_hb, xform_gcamp, xform_gcampCorr, isbrain, xform_isbrain, markers]= gcampImaging(tiffFileName, systemInfo, sessionInfo, varargin)">gcampImaging</a>	gcampImaging Processes tiff file to output hemoglobin data, gcamp, and</li><li><a href="gcampImagingRaw.html" class="code" title="function [raw, time, xform_hb, xform_gcamp, xform_gcampCorr, isbrain, xform_isbrain, markers]= gcampImagingRaw(raw, systemInfo, sessionInfo, varargin)">gcampImagingRaw</a>	gcampImagingRaw Processes rawData mat file to output hemoglobin data, gcamp, and</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function output = procRaw(raw)</a>
+0002 <span class="comment">%procRaw Detrends raw data (temporally and spatially)</span>
+0003 <span class="comment">%   output = procRaw(raw)</span>
+0004 
+0005 rawSize = size(raw);
+0006 tSize = size(raw,4);
+0007 
+0008 <span class="comment">% spatial and temporal detrending</span>
+0009 rawReshaped = reshape(raw,[],tSize);
+0010 warning(<span class="string">'Off'</span>);
+0011 
+0012 timeTrend = zeros(size(rawReshaped));
+0013 <span class="keyword">for</span> ii = 1:size(rawReshaped,1)
+0014     timeTrend(ii,:) = polyval(polyfit(1:tSize, rawReshaped(ii,:), 4), 1:tSize);
+0015 <span class="keyword">end</span>
+0016 
+0017 warning(<span class="string">'On'</span>);
+0018 rawFrameOne = raw(:,:,:,1);
+0019 timeTrend = reshape(timeTrend,rawSize);
+0020 timeDetrend = bsxfun(@rdivide, raw, timeTrend).*repmat(rawFrameOne,1,1,1,tSize);
+0021 spatTrend = bsxfun(@rdivide, mean(timeTrend,4), mean(mean(mean(timeTrend,4))));
+0022 
+0023 output = bsxfun(@rdivide, timeDetrend, spatTrend);
+0024 <span class="keyword">end</span>
+0025</pre></div>
+<hr><address>Generated on Fri 28-Dec-2018 21:42:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,423 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of generateCMap</title>
+  <meta name="keywords" content="generateCMap">
+  <meta name="description" content="cmap = GenerateCMap('Standard',scalar_factor)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">BauerLab</a> &gt; <a href="#">MATLAB</a> &gt; <a href="#">lib</a> &gt; <a href="#">+mouse</a> &gt; <a href="index.html">+plot</a> &gt; generateCMap.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for BauerLab\MATLAB\lib\+mouse\+plot&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>generateCMap
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>cmap = GenerateCMap('Standard',scalar_factor)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>function [ cmnew ] = generateCMap( type,x,varargin ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> cmap = GenerateCMap('Standard',scalar_factor)
+ Ravi code (0_tools)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function blah</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [ cmnew ] = generateCMap( type,x,varargin )</a>
+0002 <span class="comment">% cmap = GenerateCMap('Standard',scalar_factor)</span>
+0003 <span class="comment">% Ravi code (0_tools)</span>
+0004 
+0005 null_color=[.7 .7 .7];
+0006 <span class="keyword">if</span> length(varargin)&gt;0
+0007     s=[cellfun(@length,varargin,<span class="string">'uniformoutput'</span>,0)];s=[s{:}];
+0008     <span class="keyword">if</span> any(s==3)
+0009         null_color=varargin{find(s==3)};
+0010     <span class="keyword">else</span>
+0011         null_color=[.7 .7 .7];
+0012     <span class="keyword">end</span>
+0013 <span class="keyword">end</span>
+0014 <span class="comment">%define cmap</span>
+0015 <span class="keyword">if</span> strcmp(type,<span class="string">'Standard'</span>)
+0016     tempc=zeros(256,3);
+0017     tempc=autumn(256);
+0018     cmaptop=tempc(1:2:256,1:3);
+0019     tempc=winter(256);
+0020     cmapbottom=tempc(256:-2:1,1:3);
+0021     cm = [cmapbottom(1:127,:);[0 0 0];[0 0 0];cmaptop(1:127,:)];
+0022         cm = [cmapbottom(1:127,:);[0 0 0];[0 0 0];cmaptop(1:127,:)];
+0023     <span class="comment">%convert to hue/sat and crop</span>
+0024     cmhsv=rgb2hsv(cm);
+0025     lo=fix(256/2 - x*256/2);
+0026     hi=fix(256/2 + x*256/2);
+0027     cmhsv(lo:hi,3)=0;
+0028     cmnew=hsv2rgb(cmhsv);
+0029 <span class="keyword">end</span>
+0030 <span class="keyword">if</span> strcmp(type,<span class="string">'Greythreshfiv'</span>)
+0031     tempc=zeros(256,3);
+0032     tempc=autumn(256);
+0033     cmaptop=tempc(1:2:256,1:3);
+0034     tempc=winter(256);
+0035     cmapbottom=tempc(256:-2:1,1:3);
+0036     
+0037     n=fix((1-x)*128);
+0038     ni=fix(linspace(1,128,fix((1-x)*128)));
+0039 
+0040     cm = [cmapbottom(ni,:);repmat(null_color,[(128-n),1]);repmat(null_color,[(128-n),1]);cmaptop(ni,:)];
+0041 <span class="comment">%         cm = [cmapbottom(ni,:);repmat(null_color,[n,1]);cmaptop(ni,:)];</span>
+0042     <span class="comment">%convert to hue/sat and crop</span>
+0043     cmhsv=rgb2hsv(cm);
+0044     lo=fix(256/2 - x*256/2);
+0045     hi=fix(256/2 + x*256/2);
+0046     cmnew=hsv2rgb(cmhsv);
+0047 <span class="comment">%     cmnew(lo:hi,:)=repmat(null_color,[length(lo:hi) 1]);</span>
+0048 <span class="keyword">end</span>
+0049 <span class="keyword">if</span> strcmp(type,<span class="string">'Greygradient'</span>)
+0050         tempc=zeros(256,3);
+0051         tempc=autumn(256);
+0052         cmaptop=flipdim(tempc(1:2:256,1:3),1);
+0053         tempc=winter(256);
+0054         cmapbottom=flipdim(tempc(256:-2:1,1:3),1);
+0055 <span class="comment">%                 a=jet(256);</span>
+0056 <span class="comment">%         cmaptop=a(129:end,:);cmapbottom=a(1:128,:);</span>
+0057         <span class="comment">%256 size window</span>
+0058         <span class="comment">% !! Can add variable 0 location...</span>
+0059         density_func = normpdf(1:256,128.5,256*x)';
+0060         density_func=density_func./max(density_func);
+0061         cmnew = [cmapbottom(1:127,:);null_color;null_color;cmaptop(1:127,:)].*(ones(256,3)-density_func(:,[1 1 1]))+null_color(ones(256,1),:).*density_func(:,[1 1 1]);
+0062 <span class="keyword">end</span>
+0063 <span class="keyword">if</span> strcmp(type,<span class="string">'GreygradientPositive'</span>)
+0064         tempc=zeros(256,3);
+0065         tempc=autumn(256);
+0066         cmaptop=(tempc(1:2:256,1:3));
+0067         tempc=winter(256);
+0068         cmapbottom=(tempc(256:-2:1,1:3));
+0069 <span class="comment">%                 a=jet(256);</span>
+0070 <span class="comment">%         cmaptop=a(129:end,:);cmapbottom=a(1:128,:);</span>
+0071         <span class="comment">%256 size window</span>
+0072         <span class="comment">% !! Can add variable 0 location...</span>
+0073         density_func = normpdf(1:256,128.5,256*x)';
+0074         density_func=density_func./max(density_func);
+0075         cmnew = [cmapbottom(1:127,:);null_color;null_color;cmaptop(1:127,:)].*(ones(256,3)-density_func(:,[1 1 1]))+null_color(ones(256,1),:).*density_func(:,[1 1 1]);
+0076         cmnew = cmnew(129:<span class="keyword">end</span>,:);
+0077 <span class="keyword">end</span>
+0078 <span class="keyword">if</span> strcmp(type,<span class="string">'null2hot'</span>)
+0079         tempc=zeros(256,3);
+0080         tempc=hot(256);
+0081         cmaptop=(tempc(1:2:256,1:3));
+0082         tempc=winter(256);
+0083         cmapbottom=(tempc(256:-2:1,1:3));
+0084 <span class="comment">%                 a=jet(256);</span>
+0085 <span class="comment">%         cmaptop=a(129:end,:);cmapbottom=a(1:128,:);</span>
+0086         <span class="comment">%256 size window</span>
+0087         <span class="comment">% !! Can add variable 0 location...</span>
+0088         density_func = normpdf(1:256,128.5,256*x)';
+0089         density_func=density_func./max(density_func);
+0090         cmnew = [cmapbottom(1:127,:);null_color;null_color;cmaptop(1:127,:)].*(ones(256,3)-density_func(:,[1 1 1]))+null_color(ones(256,1),:).*density_func(:,[1 1 1]);
+0091         cmnew = cmnew(140:<span class="keyword">end</span>,:);
+0092 <span class="keyword">end</span>
+0093 <span class="keyword">if</span> strcmp(type,<span class="string">'null2hot2'</span>)
+0094         maplength = 256;
+0095 <span class="comment">%         tempc=zeros(512,3);</span>
+0096         tempc=hot(round(maplength/0.8));        
+0097         cmaptop=(tempc(end-maplength+1:<span class="keyword">end</span>,1:3));
+0098         cmapbottom=flipdim(cmaptop,1);
+0099 <span class="comment">%                 a=jet(256);</span>
+0100 <span class="comment">%         cmaptop=a(129:end,:);cmapbottom=a(1:128,:);</span>
+0101         <span class="comment">%256 size window</span>
+0102         <span class="comment">% !! Can add variable 0 location...</span>
+0103         density_func = normpdf(1:512,256.5,256*x)';
+0104         density_func=density_func./max(density_func);
+0105         cmnew = [cmapbottom(1:255,:);null_color;null_color;cmaptop(1:255,:)].*(ones(512,3)-density_func(:,[1 1 1]))+null_color(ones(512,1),:).*density_func(:,[1 1 1]);
+0106         cmnew = cmnew(267:<span class="keyword">end</span>,:);
+0107 <span class="keyword">end</span>
+0108 <span class="keyword">if</span> strcmp(type,<span class="string">'null2autumn'</span>)
+0109         tempc=zeros(512,3);
+0110         tempc=autumn(512);
+0111         cmaptop=(tempc(1:2:512,1:3));
+0112         tempc=winter(512);
+0113         cmapbottom=(tempc(512:-2:1,1:3));
+0114 <span class="comment">%                 a=jet(256);</span>
+0115 <span class="comment">%         cmaptop=a(129:end,:);cmapbottom=a(1:128,:);</span>
+0116         <span class="comment">%256 size window</span>
+0117         <span class="comment">% !! Can add variable 0 location...</span>
+0118         density_func = normpdf(1:512,256.5,256*x)';
+0119         density_func=density_func./max(density_func);
+0120         cmnew = [cmapbottom(1:255,:);null_color;null_color;cmaptop(1:255,:)].*(ones(512,3)-density_func(:,[1 1 1]))+null_color(ones(512,1),:).*density_func(:,[1 1 1]);
+0121         cmnew = cmnew(257:<span class="keyword">end</span>,:);
+0122 <span class="keyword">end</span>
+0123 <span class="keyword">if</span> strcmp(type,<span class="string">'null2autumn2'</span>)
+0124         tempc=zeros(512,3);
+0125         tempc=flipdim(autumn(512),1);
+0126         cmaptop=(tempc(1:2:512,1:3));
+0127         tempc=winter(512);
+0128         cmapbottom=(tempc(512:-2:1,1:3));
+0129 <span class="comment">%                 a=jet(256);</span>
+0130 <span class="comment">%         cmaptop=a(129:end,:);cmapbottom=a(1:128,:);</span>
+0131         <span class="comment">%256 size window</span>
+0132         <span class="comment">% !! Can add variable 0 location...</span>
+0133         density_func = normpdf(1:512,256.5,256*x)';
+0134         density_func=density_func./max(density_func);
+0135         cmnew = [cmapbottom(1:255,:);null_color;null_color;cmaptop(1:255,:)].*(ones(512,3)-density_func(:,[1 1 1]))+null_color(ones(512,1),:).*density_func(:,[1 1 1]);
+0136         cmnew = cmnew(257:<span class="keyword">end</span>,:);
+0137 <span class="keyword">end</span>
+0138 <span class="keyword">if</span> strcmp(type,<span class="string">'null2spring'</span>)
+0139         tempc=zeros(256,3);
+0140         tempc=autumn(256);
+0141         cmaptop=(tempc(1:2:256,1:3));
+0142         tempc=winter(256);
+0143         cmapbottom=(tempc(256:-2:1,1:3));
+0144 <span class="comment">%                 a=jet(256);</span>
+0145 <span class="comment">%         cmaptop=a(129:end,:);cmapbottom=a(1:128,:);</span>
+0146         <span class="comment">%256 size window</span>
+0147         <span class="comment">% !! Can add variable 0 location...</span>
+0148         density_func = normpdf(1:256,128.5,128*x)';
+0149         density_func=density_func./max(density_func);
+0150         cmnew = [cmapbottom(1:127,:);null_color;null_color;cmaptop(1:127,:)].*(ones(256,3)-density_func(:,[1 1 1]))+null_color(ones(256,1),:).*density_func(:,[1 1 1]);
+0151         cmnew = cmnew(129:<span class="keyword">end</span>,:);
+0152 <span class="keyword">end</span>
+0153 <span class="keyword">if</span> strcmp(type,<span class="string">'null2blue'</span>)
+0154         topLim = [0 0 1];
+0155         bottomLim = null_color;
+0156         cmap = zeros(256,3);
+0157         <span class="keyword">for</span> jj = 1:3
+0158             c = linspace(bottomLim(jj),topLim(jj),256);
+0159             cmap(:,jj) = c';
+0160         <span class="keyword">end</span>
+0161         cmnew = cmap;
+0162 <span class="keyword">end</span>
+0163 <span class="keyword">if</span> strcmp(type,<span class="string">'null2skyblue'</span>)
+0164         topLim = [0 .5 1];
+0165         bottomLim = null_color;
+0166         cmap = zeros(256,3);
+0167         <span class="keyword">for</span> jj = 1:3
+0168             c = linspace(bottomLim(jj),topLim(jj),256);
+0169             cmap(:,jj) = c';
+0170         <span class="keyword">end</span>
+0171         cmnew = cmap;
+0172 <span class="keyword">end</span>
+0173 <span class="keyword">if</span> strcmp(type,<span class="string">'null2cyan'</span>)
+0174         topLim = [0 1 1];
+0175         bottomLim = null_color;
+0176         cmap = zeros(256,3);
+0177         <span class="keyword">for</span> jj = 1:3
+0178             c = linspace(bottomLim(jj),topLim(jj),256);
+0179             cmap(:,jj) = c';
+0180         <span class="keyword">end</span>
+0181         cmnew = cmap;
+0182 <span class="keyword">end</span>
+0183 <span class="keyword">if</span> strcmp(type,<span class="string">'null2green'</span>)
+0184         topLim = [.5 1 .5];
+0185         bottomLim = null_color;
+0186         cmap = zeros(256,3);
+0187         <span class="keyword">for</span> jj = 1:3
+0188             c = linspace(bottomLim(jj),topLim(jj),256);
+0189             cmap(:,jj) = c';
+0190         <span class="keyword">end</span>
+0191         cmnew = cmap;
+0192 <span class="keyword">end</span>
+0193 <span class="keyword">if</span> strcmp(type,<span class="string">'null2yellow'</span>)
+0194         topLim = [1 1 0];
+0195         bottomLim = null_color;
+0196         cmap = zeros(256,3);
+0197         <span class="keyword">for</span> jj = 1:3
+0198             c = linspace(bottomLim(jj),topLim(jj),256);
+0199             cmap(:,jj) = c';
+0200         <span class="keyword">end</span>
+0201         cmnew = cmap;
+0202 <span class="keyword">end</span>
+0203 <span class="keyword">if</span> strcmp(type,<span class="string">'null2orange'</span>)
+0204         topLim = [1 .5 0];
+0205         bottomLim = null_color;
+0206         cmap = zeros(256,3);
+0207         <span class="keyword">for</span> jj = 1:3
+0208             c = linspace(bottomLim(jj),topLim(jj),256);
+0209             cmap(:,jj) = c';
+0210         <span class="keyword">end</span>
+0211         cmnew = cmap;
+0212 <span class="keyword">end</span>
+0213 
+0214 <span class="keyword">if</span> strcmp(type,<span class="string">'RedGreyBlue'</span>)
+0215         tempc=zeros(256,3);
+0216         tempc=autumn(256);
+0217         cmaptop=flipdim(tempc(1:2:256,1:3),1);
+0218         tempc=winter(256);
+0219         cmapbottom=flipdim(tempc(256:-2:1,1:3),1);
+0220                 a=jet(256);
+0221 <span class="comment">%         a(:,1)=a(:,1)-.1;a(a(:,1)&lt;0,1)=0;</span>
+0222 <span class="comment">%         a(1:128,2)=(a(1:128,2)-.3)*.7;a(a(1:128,2)&lt;0,2)=0;</span>
+0223 <span class="comment">%         a(1:128,3)=(a(1:128,3).*(1+.7*(1:128)'/256))*.8;</span>
+0224 <span class="comment">%         a(a(:,3)&lt;0,3)=0;</span>
+0225 <span class="comment">%         a(a(:,3)&gt;1,3)=1;</span>
+0226 
+0227         
+0228         cmaptop=a(129:<span class="keyword">end</span>,:);cmapbottom=a(1:128,:);
+0229         <span class="comment">%256 size window</span>
+0230         <span class="comment">% !! Can add variable 0 location...</span>
+0231         density_func = normpdf(1:256,128.5,256*x)';
+0232         density_func=density_func./max(density_func);
+0233         cmnew = [cmapbottom(1:127,:);null_color;null_color;cmaptop(1:127,:)].*(ones(256,3)-density_func(:,[1 1 1]))+null_color(ones(256,1),:).*density_func(:,[1 1 1]);
+0234 <span class="keyword">end</span>
+0235 
+0236 <span class="keyword">if</span> strcmp(type,<span class="string">'RedGreyBlueThin'</span>)
+0237         tempc=zeros(256,3);
+0238         tempc=autumn(256);
+0239         cmaptop=flipdim(tempc(1:2:256,1:3),1);
+0240         tempc=winter(256);
+0241         cmapbottom=flipdim(tempc(256:-2:1,1:3),1);
+0242                 a=jet(256);
+0243 <span class="comment">%         a(:,1)=a(:,1)-.1;a(a(:,1)&lt;0,1)=0;</span>
+0244 <span class="comment">%         a(1:128,2)=(a(1:128,2)-.3)*.7;a(a(1:128,2)&lt;0,2)=0;</span>
+0245 <span class="comment">%         a(1:128,3)=(a(1:128,3).*(1+.7*(1:128)'/256))*.8;</span>
+0246 <span class="comment">%         a(a(:,3)&lt;0,3)=0;</span>
+0247 <span class="comment">%         a(a(:,3)&gt;1,3)=1;</span>
+0248         
+0249         cmaptop=a(129:<span class="keyword">end</span>,:);cmapbottom=a(1:128,:);
+0250         
+0251         buff = 20;
+0252         cmbot = cmapbottom(1:end - buff,:);
+0253         cmbotnew = resample(cmbot,128,length(cmbot));
+0254         cmbotnew(cmbotnew &lt; 0) = 0;
+0255         cmbotnew(cmbotnew &gt; 1) = 1;
+0256         cmtop = cmaptop(buff+1:<span class="keyword">end</span>,:);
+0257         cmtopnew = resample(cmtop,128,length(cmtop));
+0258         cmtopnew(cmtopnew &lt; 0) = 0;
+0259         cmtopnew(cmtopnew &gt; 1) = 1;
+0260         cmapbottom = cmbotnew;
+0261         cmaptop = cmtopnew;
+0262         
+0263         <span class="comment">%256 size window</span>
+0264         <span class="comment">% !! Can add variable 0 location...</span>
+0265         density_func = normpdf(1:256,128.5,128*x)';
+0266         density_func=density_func./max(density_func);
+0267         cmnew = [cmapbottom(1:127,:);null_color;null_color;cmaptop(1:127,:)].*(ones(256,3)-density_func(:,[1 1 1]))+null_color(ones(256,1),:).*density_func(:,[1 1 1]);
+0268 <span class="keyword">end</span>
+0269 <span class="comment">%%</span>
+0270 <a name="_sub1" href="#_subfunctions" class="code">function blah</a>
+0271 <span class="keyword">if</span> strcmp(type,<span class="string">'Greygradient_Circular'</span>)
+0272         tempc=zeros(256,3);
+0273         tempc=autumn(256);
+0274         cmapbottom=flipdim(tempc(1:2:256,1:3),1);
+0275         tempc=winter(256);
+0276         cmaptop=flipdim(tempc(256:-2:1,1:3),1);
+0277 
+0278         <span class="comment">%256 size window</span>
+0279         <span class="comment">% !! Can add variable 0 location...</span>
+0280         density_func = normpdf(1:256,128.5,256*x)';
+0281         density_func=density_func./max(density_func);
+0282         cm = [cmapbottom(1:127,:);null_color;null_color;cmaptop(1:127,:)].*(ones(256,3)-density_func(:,[1 1 1]))+null_color(ones(256,1),:).*density_func(:,[1 1 1]);
+0283 <span class="comment">%         cmnew=[cm;cm(end:-1:1,:)]</span>
+0284         cmnew=([cm(1:2:<span class="keyword">end</span>,:);cm(end:-2:1,:)]);
+0285 <span class="keyword">end</span>
+0286 <span class="keyword">if</span> strcmp(type,<span class="string">'Greygradient_Circular_Multi'</span>)
+0287         tempc=zeros(256,3);
+0288         tempc1=autumn(256);tempc2=winter(256);
+0289 <span class="comment">%         cmaptop=flipdim(tempc1(1:2:256,1:3),1);</span>
+0290 <span class="comment">%         cmapbottom=flipdim(tempc2(256:-2:1,1:3),1);</span>
+0291         cmap1=tempc1(1:2:256,1:3);
+0292         cmap2=tempc2(256:-2:1,1:3);
+0293         <span class="comment">%256 size window</span>
+0294         <span class="comment">% !! Can add variable 0 location...</span>
+0295         density_func = normpdf(1:256,128.5,256*x)';
+0296         density_func=density_func./max(density_func);
+0297         cm = [cmap1(1:127,:);null_color;null_color;cmap2(1:127,:)].*(ones(256,3)-density_func(:,[1 1 1]))+null_color(ones(256,1),:).*density_func(:,[1 1 1]);
+0298 <span class="comment">%         cmnew=[cm;cm(end:-1:1,:)]</span>
+0299         full=([cm(1:2:<span class="keyword">end</span>,:);cm(end:-2:1,:)]);
+0300         cmnew=repmat(full,[max(varargin{2}-varargin{1},1) 1]);
+0301 <span class="keyword">end</span>
+0302 <span class="keyword">if</span> strcmp(type,<span class="string">'Greygradient_Circular_Lag'</span>)
+0303         tempc=zeros(256,3);
+0304         tempc=autumn(256);
+0305         cmaptop=flipdim(tempc(1:2:256,1:3),1);
+0306         tempc=winter(256);
+0307         cmapbottom=flipdim(tempc(256:-2:1,1:3),1);
+0308         colormap
+0309         tempc=winter(256);
+0310         cmapbottom=flipdim(tempc(256:-2:1,1:3),1);
+0311         tempc=winter(256);
+0312         cmapbottom=flipdim(tempc(256:-2:1,1:3),1);
+0313         <span class="comment">%256 size window</span>
+0314         <span class="comment">% !! Can add variable 0 location...</span>
+0315         density_func = normpdf(1:256,128.5,256*x)';
+0316         density_func=density_func./max(density_func);
+0317         cm = [cmapbottom(1:127,:);null_color;null_color;cmaptop(1:127,:)].*(ones(256,3)-density_func(:,[1 1 1]))+null_color(ones(256,1),:).*density_func(:,[1 1 1]);
+0318 <span class="comment">%         cmnew=[cm;cm(end:-1:1,:)]</span>
+0319         cmnew=([cm(1:2:<span class="keyword">end</span>,:);cm(end:-2:1,:)]);
+0320 <span class="keyword">end</span>
+0321 <span class="keyword">if</span> strcmp(type,<span class="string">'GreyCrop'</span>)
+0322     tempc=zeros(256,3);
+0323     tempc=autumn(256);
+0324     cmaptop=tempc(1:2:256,1:3);
+0325     tempc=winter(256);
+0326     cmapbottom=tempc(256:-2:1,1:3);
+0327     cm = [cmapbottom(1:127,:);[.7 .7 .7];[.7 .7 .7];cmaptop(1:127,:)];
+0328         cm = [cmapbottom(1:127,:);[.7 .7 .7];[.7 .7 .7];cmaptop(1:127,:)];
+0329     <span class="comment">%convert to hue/sat and crop</span>
+0330     cmhsv=rgb2hsv(cm);
+0331     lo=fix(256/2 - x*256/2);
+0332     hi=fix(256/2 + x*256/2);
+0333 <span class="comment">%     cmhsv(lo:hi,3)=1;%.7*ones(size(lo:hi,3));</span>
+0334     cmnew=hsv2rgb(cmhsv);
+0335     cmnew(lo:hi,:)=.7*ones(length(lo:hi),3);
+0336 <span class="keyword">end</span>
+0337 <span class="keyword">if</span> strcmp(type,<span class="string">'Gradient'</span>)
+0338     tempc=zeros(256,3);
+0339     tempc=hot(256);
+0340     cm=tempc;
+0341     cmnew = cm;
+0342 <span class="keyword">end</span>
+0343 <span class="keyword">if</span> strcmp(type,<span class="string">'Gradient_on_Grey'</span>)
+0344     tempc=zeros(256,3);
+0345     tempc=(hot(256)+.5*ones(256,3))/1.5;
+0346     tempc(tempc&gt;1)=1;
+0347     cm=tempc;
+0348     cmnew = cm;
+0349 <span class="keyword">end</span>
+0350 <span class="keyword">if</span> strcmp(type,<span class="string">'noblack'</span>)
+0351     tempc=zeros(256,3);
+0352     tempc=autumn(256);
+0353     cmaptop=tempc(1:2:256,1:3);
+0354     tempc=winter(256);
+0355     cmapbottom=tempc(256:-2:1,1:3);
+0356     cm = [cmapbottom(1:128,:);cmaptop(1:128,:)];
+0357       <span class="comment">%  cm = [cmapbottom(1:127,:);[0 0 0];[0 0 0];cmaptop(1:127,:)];</span>
+0358     <span class="comment">%convert to hue/sat and crop</span>
+0359     cmnew=cm;
+0360 <span class="keyword">end</span>
+0361 
+0362 <span class="keyword">if</span> strcmp(type,<span class="string">'Positive'</span>)
+0363     tempc=zeros(256,3);
+0364     tempc=autumn(256);
+0365     cmaptop=tempc(1:256,1:3);
+0366     cm = [[0 0 0];cmaptop(1:255,:)];
+0367     cmhsv=rgb2hsv(cm);
+0368     hi=fix(x*256);
+0369     <span class="keyword">if</span> (hi &lt; 1) hi=1;<span class="keyword">end</span>
+0370     cmhsv(1:hi,3)=0;
+0371     cmnew=hsv2rgb(cmhsv);
+0372 <span class="keyword">end</span>
+0373</pre></div>
+<hr><address>Generated on Fri 28-Dec-2018 21:42:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

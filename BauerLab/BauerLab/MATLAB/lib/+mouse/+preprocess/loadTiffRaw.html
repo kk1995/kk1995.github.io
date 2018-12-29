@@ -1,0 +1,88 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of loadTiffRaw</title>
+  <meta name="keywords" content="loadTiffRaw">
+  <meta name="description" content="loadTiffRaw Loads mouse imaging tiff raw data">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">BauerLab</a> &gt; <a href="#">MATLAB</a> &gt; <a href="#">lib</a> &gt; <a href="#">+mouse</a> &gt; <a href="index.html">+preprocess</a> &gt; loadTiffRaw.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for BauerLab\MATLAB\lib\+mouse\+preprocess&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>loadTiffRaw
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>loadTiffRaw Loads mouse imaging tiff raw data</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>function [rawOutput, remainingDataOutput] = loadTiffRaw(fileName,speciesNum,varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">loadTiffRaw Loads mouse imaging tiff raw data
+   Input:
+       fileName = directory and name of file
+       speciesNum = how many species there are (on 3rd dim)
+       remainingDataInput = any leftover data from previous file, if it
+       exists</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [rawOutput, remainingDataOutput] = loadTiffRaw(fileName,speciesNum,varargin)</a>
+0002 <span class="comment">%loadTiffRaw Loads mouse imaging tiff raw data</span>
+0003 <span class="comment">%   Input:</span>
+0004 <span class="comment">%       fileName = directory and name of file</span>
+0005 <span class="comment">%       speciesNum = how many species there are (on 3rd dim)</span>
+0006 <span class="comment">%       remainingDataInput = any leftover data from previous file, if it</span>
+0007 <span class="comment">%       exists</span>
+0008 
+0009 <span class="keyword">if</span> nargin &gt; 2
+0010     remainingDataInput = varargin{1};
+0011 <span class="keyword">else</span>
+0012     remainingDataInput = [];
+0013 <span class="keyword">end</span>
+0014 
+0015 fileName = char(fileName);
+0016 remainingDataInput = single(remainingDataInput);
+0017 rawdata=readtiff(fileName);
+0018 
+0019 rawdata=single(rawdata);
+0020 rawdataConcat = cat(3,remainingDataInput,rawdata);
+0021 [nVy, nVx, L]=size(rawdataConcat);
+0022 
+0023 R=mod(L,speciesNum);
+0024 <span class="keyword">if</span> R~=0
+0025     rawOutput=rawdataConcat(:,:,1:(L-R));
+0026     remainingDataOutput = rawdataConcat(:,:,(L-R)+1:size(rawdataConcat,3));
+0027     disp([<span class="string">'** '</span>,num2str(R),<span class="string">' frames were dropped into remaining data **'</span>]);
+0028 <span class="keyword">else</span>
+0029     rawOutput = rawdataConcat;
+0030     remainingDataOutput = [];
+0031 <span class="keyword">end</span>
+0032 
+0033 rawOutput=reshape(rawOutput,nVx,nVy,speciesNum,[]);
+0034 
+0035 <span class="keyword">end</span>
+0036</pre></div>
+<hr><address>Generated on Fri 28-Dec-2018 21:42:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

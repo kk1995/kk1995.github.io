@@ -1,0 +1,96 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of projLag</title>
+  <meta name="keywords" content="projLag">
+  <meta name="description" content="projLag Finds projection lag">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">BauerLab</a> &gt; <a href="#">MATLAB</a> &gt; <a href="#">lib</a> &gt; <a href="#">+mouse</a> &gt; <a href="index.html">+conn</a> &gt; projLag.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for BauerLab\MATLAB\lib\+mouse\+conn&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>projLag
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>projLag Finds projection lag</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>function [lagTime,lagAmp] = projLag(data1,data2,edgeLen,tZone) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">projLag Finds projection lag
+   Inputs:
+       data1 = time series data (aribtrary size as long as last dim is time)
+       data2 = (same size as data1)
+       edgeLen = data points from peak to consider for quadratic fit (if 3, 7
+       points around are considered)
+       tZone = frame at which the lag is considered insensible (becomes
+       nan)
+   Outputs:
+       lagTime = pix x pix
+       lagAmp = pix x pix</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [lagTime,lagAmp] = projLag(data1,data2,edgeLen,tZone)</a>
+0002 <span class="comment">%projLag Finds projection lag</span>
+0003 <span class="comment">%   Inputs:</span>
+0004 <span class="comment">%       data1 = time series data (aribtrary size as long as last dim is time)</span>
+0005 <span class="comment">%       data2 = (same size as data1)</span>
+0006 <span class="comment">%       edgeLen = data points from peak to consider for quadratic fit (if 3, 7</span>
+0007 <span class="comment">%       points around are considered)</span>
+0008 <span class="comment">%       tZone = frame at which the lag is considered insensible (becomes</span>
+0009 <span class="comment">%       nan)</span>
+0010 <span class="comment">%   Outputs:</span>
+0011 <span class="comment">%       lagTime = pix x pix</span>
+0012 <span class="comment">%       lagAmp = pix x pix</span>
+0013 
+0014 
+0015 validRange = tZone;
+0016 
+0017 dataSize = size(data1);
+0018 data1 = reshape(data1,[],dataSize(end));
+0019 data2 = reshape(data2,[],dataSize(end));
+0020 
+0021 <span class="comment">% initialize outputs</span>
+0022 pixNum = size(data1,1);
+0023 lagTime = nan(pixNum);
+0024 lagAmp = nan(pixNum);
+0025 
+0026 <span class="keyword">for</span> pix1 = 1:pixNum
+0027     <span class="keyword">for</span> pix2 = 1:pixNum
+0028         [lagTime(pix1,pix2),lagAmp(pix1,pix2),~] = mouse.conn.findLag(<span class="keyword">...</span>
+0029             data1(pix1,:),data2(pix2,:),true,true,validRange,edgeLen); <span class="comment">% finding lag; data 1 lags data 2 by how much</span>
+0030         
+0031         <span class="comment">% remove any lag time that is absurd</span>
+0032         <span class="keyword">if</span> abs(lagTime(pix1,pix2)) &gt; tZone
+0033             lagTime(pix1,pix2) = NaN;
+0034             lagAmp(pix1,pix2) = NaN;
+0035         <span class="keyword">end</span>
+0036     <span class="keyword">end</span>
+0037 <span class="keyword">end</span>
+0038 
+0039 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Fri 28-Dec-2018 21:42:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

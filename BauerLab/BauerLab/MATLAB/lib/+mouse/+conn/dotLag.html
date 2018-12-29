@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of dotLag</title>
+  <meta name="keywords" content="dotLag">
+  <meta name="description" content="dotLag Finds lag within each pixel of two data sets">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">BauerLab</a> &gt; <a href="#">MATLAB</a> &gt; <a href="#">lib</a> &gt; <a href="#">+mouse</a> &gt; <a href="index.html">+conn</a> &gt; dotLag.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for BauerLab\MATLAB\lib\+mouse\+conn&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>dotLag
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>dotLag Finds lag within each pixel of two data sets</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>function [lagTime,lagAmp,covResult] = dotLag(data1,data2,edgeLen,tZone,corrThr) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">dotLag Finds lag within each pixel of two data sets
+   Inputs:
+       data1 = pix dim1 x pix dim2 x time
+       data2 = pix dim1 x pix dim2 x time
+       edgeLen = data points from peak to consider for quadratic fit (if 3, 7
+       points around are considered)
+       tZone = frame at which the lag is considered insensible (becomes
+       nan)
+       corrThr
+   Outputs:
+       lagTime = pix dim1 x pix dim2
+       lagAmp = pix dim1 x pix dim2</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [lagTime,lagAmp,covResult] = dotLag(data1,data2,edgeLen,tZone,corrThr)</a>
+0002 <span class="comment">%dotLag Finds lag within each pixel of two data sets</span>
+0003 <span class="comment">%   Inputs:</span>
+0004 <span class="comment">%       data1 = pix dim1 x pix dim2 x time</span>
+0005 <span class="comment">%       data2 = pix dim1 x pix dim2 x time</span>
+0006 <span class="comment">%       edgeLen = data points from peak to consider for quadratic fit (if 3, 7</span>
+0007 <span class="comment">%       points around are considered)</span>
+0008 <span class="comment">%       tZone = frame at which the lag is considered insensible (becomes</span>
+0009 <span class="comment">%       nan)</span>
+0010 <span class="comment">%       corrThr</span>
+0011 <span class="comment">%   Outputs:</span>
+0012 <span class="comment">%       lagTime = pix dim1 x pix dim2</span>
+0013 <span class="comment">%       lagAmp = pix dim1 x pix dim2</span>
+0014 
+0015 validInd = -tZone:tZone;
+0016 <span class="comment">% validInd = [];</span>
+0017 covResult = nan(size(data1,1)*size(data1,2)/2,numel(validInd));
+0018 
+0019 <span class="comment">% initialize outputs</span>
+0020 lagTime = nan(size(data1,1),size(data1,2));
+0021 lagAmp = nan(size(data1,1),size(data1,2));
+0022 
+0023 
+0024 <span class="keyword">for</span> pixRow = 1:size(data1,1) <span class="comment">% for each pixel</span>
+0025     <span class="keyword">for</span> pixCol = 1:size(data1,2)
+0026         lagData1 = squeeze(data1(pixRow,pixCol,:));
+0027         lagData2 = squeeze(data2(pixRow,pixCol,:));
+0028         [lagTime(pixRow,pixCol),lagAmp(pixRow,pixCol),covResultPix]<span class="keyword">...</span>
+0029             = mouse.freq.findLag(lagData1,lagData2,true,false,validInd,edgeLen,corrThr); <span class="comment">% finding lag; data 1 lags data 2 by how much</span>
+0030         
+0031         <span class="comment">% remove any lag time that is absurd</span>
+0032         <span class="keyword">if</span> abs(lagTime(pixRow,pixCol)) &gt; tZone
+0033             lagTime(pixRow,pixCol) = NaN;
+0034             lagAmp(pixRow,pixCol) = NaN;
+0035         <span class="keyword">end</span>
+0036         
+0037         <span class="keyword">if</span> ~isnan(lagTime(pixRow,pixCol))
+0038             covResult(pixRow+(pixCol-1)*size(data1,1),:) = covResultPix;
+0039         <span class="keyword">end</span>
+0040     <span class="keyword">end</span>
+0041 <span class="keyword">end</span>
+0042 <span class="keyword">end</span>
+0043</pre></div>
+<hr><address>Generated on Fri 28-Dec-2018 21:42:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

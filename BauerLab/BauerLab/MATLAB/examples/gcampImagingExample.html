@@ -1,0 +1,103 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of gcampImagingExample</title>
+  <meta name="keywords" content="gcampImagingExample">
+  <meta name="description" content="this script is a wrapper around gcampImaging.m function that shows how">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">BauerLab</a> &gt; <a href="#">MATLAB</a> &gt; <a href="index.html">examples</a> &gt; gcampImagingExample.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for BauerLab\MATLAB\examples&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>gcampImagingExample
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>this script is a wrapper around gcampImaging.m function that shows how</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> this script is a wrapper around gcampImaging.m function that shows how
+ the function should be used. As shown, you state which tiff file to run,
+ then get system and session information either via the functions
+ sysInfo.m and session2procInfo.m or manual addition. Run the
+ gcampImaging.m function afterwards and you are good to go!</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">% this script is a wrapper around gcampImaging.m function that shows how</span>
+0002 <span class="comment">% the function should be used. As shown, you state which tiff file to run,</span>
+0003 <span class="comment">% then get system and session information either via the functions</span>
+0004 <span class="comment">% sysInfo.m and session2procInfo.m or manual addition. Run the</span>
+0005 <span class="comment">% gcampImaging.m function afterwards and you are good to go!</span>
+0006 
+0007 <span class="comment">%% state the tiff file</span>
+0008 
+0009 tiffFileName = &quot;J:\180813\180813-ProbeW3M2-Pre.tif&quot;;
+0010 
+0011 <span class="comment">%% get system or session information.</span>
+0012 
+0013 <span class="comment">% use the pre-existing system and session information by selecting the type</span>
+0014 <span class="comment">% of system and the type of session. If the system or session you are using</span>
+0015 <span class="comment">% do not fit the existing choices, you can either add new system and</span>
+0016 <span class="comment">% session types or add them manually.</span>
+0017 <span class="comment">% for systemInfo, you need rgb and LEDFiles</span>
+0018 <span class="comment">% for sessionInfo, you need framerate, freqout, lowpass, and highpass</span>
+0019 
+0020 <span class="comment">% systemType = 'fcOIS1', 'fcOIS2', 'fcOIS2_Fluor' or 'EastOIS1_Fluor'</span>
+0021 systemInfo = mouse.expSpecific.sysInfo(<span class="string">'fcOIS2_Fluor'</span>);
+0022 
+0023 <span class="comment">% sessionType = 'fc' or 'stim'</span>
+0024 sessionInfo = mouse.expSpecific.sesInfo(<span class="string">'gcamp6f'</span>);
+0025 sessionInfo.freqout = 2; <span class="comment">% to downsample to 2 Hz</span>
+0026 
+0027 <span class="comment">%% get gcamp and hb data</span>
+0028 
+0029 [raw, time, xform_hb, xform_gcamp, xform_gcampCorr, isbrain, xform_isbrain, markers] <span class="keyword">...</span>
+0030     = probe.probeImaging(tiffFileName, systemInfo, sessionInfo,<span class="keyword">...</span>
+0031     <span class="string">'darkFrameNum'</span>, round(sessionInfo.framerate*5));
+0032 
+0033 <span class="comment">% % if brain mask and markers are available:</span>
+0034 <span class="comment">% [raw, time, xform_hb, xform_gcamp, xform_gcampCorr, isbrain, xform_isbrain, markers] ...</span>
+0035 <span class="comment">%     = gcamp.gcampImaging(tiffFileName, systemInfo, sessionInfo,...</span>
+0036 <span class="comment">%       isbrain, markers, 'darkFrameNum', round(sessionInfo.framerate*5));</span>
+0037 
+0038 <span class="comment">% isbrain = logical nxn array of brain mask.</span>
+0039 <span class="comment">% markers = the brain markers that are created during the whole GUI where</span>
+0040 <span class="comment">% you click on the midline suture and lambda. If you do not have these,</span>
+0041 <span class="comment">% just run the code without giving these inputs, go through the GUI, then</span>
+0042 <span class="comment">% the code will output isbrain, xform_isbrain, and markers.</span>
+0043 
+0044 <span class="comment">%% plot</span>
+0045 
+0046 plot(time,squeeze(xform_hb(79,95,1,:))*1000);
+0047 hold on; plot(time,squeeze(xform_hb(79,95,2,:))*1000);
+0048 hold on; plot(time,squeeze(xform_gcamp(79,95,1,:)));
+0049 hold on; plot(time,squeeze(xform_gcampCorr(79,95,1,:)));
+0050 hold off;
+0051 
+0052 legend(<span class="string">'HbO (mM)'</span>,<span class="string">'HbR (mM)'</span>,<span class="string">'gcamp'</span>,<span class="string">'gcamp corrected'</span>);</pre></div>
+<hr><address>Generated on Fri 28-Dec-2018 21:42:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,216 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of procOIS</title>
+  <meta name="keywords" content="procOIS">
+  <meta name="description" content="(c) 2009 Washington University in St. Louis">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">BauerLab</a> &gt; <a href="#">MATLAB</a> &gt; <a href="#">lib</a> &gt; <a href="#">+mouse</a> &gt; <a href="index.html">+preprocess</a> &gt; procOIS.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for BauerLab\MATLAB\lib\+mouse\+preprocess&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>procOIS
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>(c) 2009 Washington University in St. Louis</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>function [datahb, op, E] = procOIS(rawdata, ledFiles, varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> (c) 2009 Washington University in St. Louis
+ All Rights Reserved</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+<li><a href="smoothimage.html" class="code" title="function [data2]=smoothimage(data,gbox,gsigma)">smoothimage</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function y = isstringorchar(x)</a></li><li><a href="#_sub2" class="code">function [data2]=smoothimage(data,gbox,gsigma)</a></li><li><a href="#_sub3" class="code">function [data2]=procPixel(rawdata,dpf,E)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [datahb, op, E] = procOIS(rawdata, ledFiles, varargin)</a>
+0002 
+0003 <span class="comment">% (c) 2009 Washington University in St. Louis</span>
+0004 <span class="comment">% All Rights Reserved</span>
+0005 
+0006 <span class="comment">%   rawdata = n x n x (LED channels) x time</span>
+0007 <span class="comment">%   frameRate</span>
+0008 <span class="comment">%   bandpassFreq = 1 x 2 (highpass and lowpass)</span>
+0009 <span class="comment">%   ledFiles = string array listing the led files to load led spectrum</span>
+0010 <span class="comment">%   from</span>
+0011 <span class="comment">%   mask (optional) = brain mask. If not given, then the whole image is considered</span>
+0012 <span class="comment">%   part of the brain.</span>
+0013 <span class="comment">%   extCoeffFile (parameter) = if not given, then default prahl ext</span>
+0014 <span class="comment">%   coefficient is used.</span>
+0015 
+0016 <span class="comment">% output variable explanation:</span>
+0017 <span class="comment">% datahb: processed rawdata reduced to hemoglobin</span>
+0018 <span class="comment">% WL: White Light Image (used the Red, Yellow, and Blue raw data channels</span>
+0019 <span class="comment">% op: Optical Properties specified for tissue</span>
+0020 <span class="comment">% E: Spectroscopy matrix (The extinction coefficient of each hemoglobin species for each wavelength</span>
+0021 <span class="comment">% info: Information about the parameters used to process the raw data,</span>
+0022 <span class="comment">% e.g., framerate, filters, number of LEDs used, resampling frequency, etc.</span>
+0023 
+0024 <span class="comment">% no resampling</span>
+0025 
+0026 <span class="comment">% (c) 2009 Washington University in St. Louis</span>
+0027 <span class="comment">% All Right Reserved</span>
+0028 <span class="comment">%</span>
+0029 <span class="comment">% Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+0030 <span class="comment">% You may not use this file except in compliance with the License.</span>
+0031 <span class="comment">% A copy of the License is available is with the distribution and can also</span>
+0032 <span class="comment">% be found at:</span>
+0033 <span class="comment">%</span>
+0034 <span class="comment">% http://www.apache.org/licenses/LICENSE-2.0</span>
+0035 <span class="comment">%</span>
+0036 <span class="comment">% THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS</span>
+0037 <span class="comment">% IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,</span>
+0038 <span class="comment">% THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR</span>
+0039 <span class="comment">% PURPOSE, OR THAT THE USE OF THE SOFTWARD WILL NOT INFRINGE ANY PATENT</span>
+0040 <span class="comment">% COPYRIGHT, TRADEMARK, OR OTHER PROPRIETARY RIGHTS ARE DISCLAIMED. IN NO</span>
+0041 <span class="comment">% EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY</span>
+0042 <span class="comment">% DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL</span>
+0043 <span class="comment">% DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS</span>
+0044 <span class="comment">% OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)</span>
+0045 <span class="comment">% HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,</span>
+0046 <span class="comment">% STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN</span>
+0047 <span class="comment">% ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE</span>
+0048 <span class="comment">% POSSIBILITY OF SUCH DAMAGE.</span>
+0049 
+0050     <a name="_sub1" href="#_subfunctions" class="code">function y = isstringorchar(x)</a>
+0051         y = isstring(x) &amp; ischar(x);
+0052     <span class="keyword">end</span>
+0053 
+0054 p = inputParser;
+0055 pkgDir = what(<span class="string">'bauerParams'</span>);
+0056 defaultExtFile = fullfile(pkgDir.path,<span class="string">'prahl_extinct_coef.txt'</span>);
+0057 addParameter(p,<span class="string">'extCoeffFile'</span>,defaultExtFile,@<a href="#_sub1" class="code" title="subfunction y = isstringorchar(x)">isstringorchar</a>);
+0058 addOptional(p,<span class="string">'mask'</span>,[],@islogical);
+0059 parse(p,varargin{:});
+0060 
+0061 mask = p.Results.mask;
+0062 
+0063 <span class="keyword">if</span> isempty(mask)
+0064     mask = true(size(rawdata,1),size(rawdata,2));
+0065 <span class="keyword">end</span>
+0066 
+0067 extCoeffFile = p.Results.extCoeffFile;
+0068 
+0069 <span class="comment">%% Get Optical Properties</span>
+0070 
+0071 <span class="comment">% [op, E, ~, ~] = getop_system(ledFiles, extCoeffFile);</span>
+0072 [op, E] = bauerParams.getHbOpticalProperties(ledFiles, extCoeffFile);
+0073 dpf = op.dpf;
+0074 
+0075 <span class="comment">%% Process raw data</span>
+0076 
+0077 rawdata(rawdata &lt; 0) = 0;
+0078 nVx = size(rawdata,2);
+0079 nVy = size(rawdata,1);
+0080 
+0081 rawdataReshaped = reshape(rawdata,[size(rawdata,1)*size(rawdata,2) size(rawdata,3) size(rawdata,4)]);
+0082 
+0083 datahb = zeros(nVy*nVx,2,size(rawdataReshaped,3));
+0084 <span class="keyword">for</span> ind = 1:nVx*nVy
+0085     
+0086     validBrain = mask(ind);
+0087     
+0088     <span class="keyword">if</span> validBrain
+0089         datahb(ind,:,:) = <a href="#_sub3" class="code" title="subfunction [data2]=procPixel(rawdata,dpf,E)">procPixel</a>(squeeze(rawdataReshaped(ind,:,:)),dpf,E);
+0090     <span class="keyword">end</span>
+0091 <span class="keyword">end</span>
+0092 datahb = reshape(datahb,nVy,nVx,size(datahb,2),size(datahb,3));
+0093 datahb = <a href="smoothimage.html" class="code" title="function [data2]=smoothimage(data,gbox,gsigma)">smoothimage</a>(datahb,5,1.2); <span class="comment">% spatially smooth data</span>
+0094 <span class="keyword">end</span>
+0095 
+0096 <span class="comment">%% smoothimage()</span>
+0097 <a name="_sub2" href="#_subfunctions" class="code">function [data2]=smoothimage(data,gbox,gsigma)</a>
+0098 
+0099 [nVx nVy cnum T]=size(data);
+0100 
+0101 <span class="comment">% Gaussian box filter center</span>
+0102 x0=ceil(gbox/2);
+0103 y0=ceil(gbox/2);
+0104 
+0105 <span class="comment">% Make Gaussian filter</span>
+0106 G=zeros(gbox);
+0107 <span class="keyword">for</span> x=1:gbox
+0108     <span class="keyword">for</span> y=1:gbox
+0109         G(x,y)=exp((-(x-x0)^2-(y-y0)^2)/(2*gsigma^2));
+0110     <span class="keyword">end</span>
+0111 <span class="keyword">end</span>
+0112 
+0113 <span class="comment">% normalize Gaussian to 1</span>
+0114 G=G/sum(sum(G));
+0115 
+0116 <span class="comment">% Initialize</span>
+0117 data2=zeros(nVx,nVy,cnum,T);
+0118 
+0119 <span class="comment">% convolve data with filter</span>
+0120 <span class="keyword">for</span> c=1:cnum
+0121     <span class="keyword">for</span> t=1:T
+0122         data2(:,:,c,t)=conv2(squeeze(data(:,:,c,t)),G,<span class="string">'same'</span>);
+0123     <span class="keyword">end</span>
+0124 <span class="keyword">end</span>
+0125 
+0126 <span class="keyword">end</span>
+0127 
+0128 <span class="comment">%% procPixel()</span>
+0129 <a name="_sub3" href="#_subfunctions" class="code">function [data2]=procPixel(rawdata,dpf,E)</a>
+0130 
+0131 <span class="keyword">if</span> size(rawdata,2) == 1
+0132     rawdata = rawdata';
+0133 <span class="keyword">end</span>
+0134 
+0135 <span class="comment">% % Detrend</span>
+0136 <span class="comment">% warning('off')</span>
+0137 <span class="comment">% data = nan(size(rawdata));</span>
+0138 <span class="comment">% for c=1:info.numled</span>
+0139 <span class="comment">%     data(c,:)=rawdata(c,:)-polyval(polyfit(1:info.T1, rawdata(c,:), 5), 1:info.T1)+mean(rawdata(c,:));</span>
+0140 <span class="comment">% end</span>
+0141 <span class="comment">% warning('on')</span>
+0142 
+0143 <span class="comment">% % detrending using high pass</span>
+0144 <span class="comment">% data = nan(size(rawdata));</span>
+0145 <span class="comment">% for c = 1:size(rawdata,1)</span>
+0146 <span class="comment">%     data(c,:) = highpass(double(rawdata(c,:)),bandpassFreq(1),frameRate)+mean(rawdata(c,:));</span>
+0147 <span class="comment">% end</span>
+0148 data = rawdata;
+0149 
+0150 <span class="comment">%Logmean</span>
+0151 dataLogMean = logmean(data);
+0152 
+0153 <span class="comment">%Account for differential pathlength</span>
+0154 <span class="keyword">for</span> c=1:size(dataLogMean,1)
+0155     dataLogMean(c,:)=squeeze(dataLogMean(c,:))/dpf(c);
+0156 <span class="keyword">end</span>
+0157 
+0158 <span class="comment">% dataLogMean = lowpass(dataLogMean,bandpassFreq(2),frameRate);</span>
+0159 
+0160 <span class="comment">%Spectroscopy</span>
+0161 [data2]=dotspect(dataLogMean,log(10)*E);
+0162 
+0163 <span class="comment">% reduce frequency</span>
+0164 <span class="comment">% data2 = resampledata(data2,info.framerate,info.freqout,10^-5);</span>
+0165 
+0166 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Fri 28-Dec-2018 21:42:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

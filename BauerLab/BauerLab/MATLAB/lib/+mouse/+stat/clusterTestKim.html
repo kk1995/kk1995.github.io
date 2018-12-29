@@ -1,0 +1,121 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of clusterTestKim</title>
+  <meta name="keywords" content="clusterTestKim">
+  <meta name="description" content="clusterTest Takes in t-statistics for null hypothesis and for test">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">BauerLab</a> &gt; <a href="#">MATLAB</a> &gt; <a href="#">lib</a> &gt; <a href="#">+mouse</a> &gt; <a href="index.html">+stat</a> &gt; clusterTestKim.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for BauerLab\MATLAB\lib\+mouse\+stat&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>clusterTestKim
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>clusterTest Takes in t-statistics for null hypothesis and for test</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>function [cluster_loc, cluster_p, cluster_t, tDist] = clusterTestKim(nullMatrix,testMatrix,tThrMatrix) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">clusterTest Takes in t-statistics for null hypothesis and for test
+   [cluster_loc, cluster_p, significant, cluster_t, tDist] = clusterTestMaris(nullMatrix,testMatrix,t_thr)
+   Inputs:
+      nullMatrix = a x b x iterations, where a and b are usually (frequency,
+      time), (time, electrode), (frequency, frequency), etc. Iterations is
+      the number of shuffled data analyzed. We expect nullMatrix to be
+      t-values from shuffled data.
+      testMatrix = a x b. The test matrix that will be tested against null
+      hypothesis
+      t_thr = threhold for t-value. If the t-value is above t_thr, then that
+      data point will be included in the cluster.
+   Outputs:
+       cluster_loc
+       cluster_p
+       cluster_t
+       tDist
+
+   Modification of Maris &quot;Nonparametric statistical testing of EEG- and
+   MEG-data.&quot; J Neurosci Methods (2007)
+   The modification is that all null t-statistics are considered instead
+   of the highest value. An important point to make is that the p-values
+   are now subject to multiple-comparisons, so holm-bonferroni test should
+   be done on the p-value outputs.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+<li><a href="holmBonf.html" class="code" title="function reject = holmBonf(p,varargin)">holmBonf</a>	holmBonf Holm-Bonferroni method</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [cluster_loc, cluster_p, cluster_t, tDist] = clusterTestKim(nullMatrix,testMatrix,tThrMatrix)</a>
+0002 <span class="comment">%clusterTest Takes in t-statistics for null hypothesis and for test</span>
+0003 <span class="comment">%   [cluster_loc, cluster_p, significant, cluster_t, tDist] = clusterTestMaris(nullMatrix,testMatrix,t_thr)</span>
+0004 <span class="comment">%   Inputs:</span>
+0005 <span class="comment">%      nullMatrix = a x b x iterations, where a and b are usually (frequency,</span>
+0006 <span class="comment">%      time), (time, electrode), (frequency, frequency), etc. Iterations is</span>
+0007 <span class="comment">%      the number of shuffled data analyzed. We expect nullMatrix to be</span>
+0008 <span class="comment">%      t-values from shuffled data.</span>
+0009 <span class="comment">%      testMatrix = a x b. The test matrix that will be tested against null</span>
+0010 <span class="comment">%      hypothesis</span>
+0011 <span class="comment">%      t_thr = threhold for t-value. If the t-value is above t_thr, then that</span>
+0012 <span class="comment">%      data point will be included in the cluster.</span>
+0013 <span class="comment">%   Outputs:</span>
+0014 <span class="comment">%       cluster_loc</span>
+0015 <span class="comment">%       cluster_p</span>
+0016 <span class="comment">%       cluster_t</span>
+0017 <span class="comment">%       tDist</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">%   Modification of Maris &quot;Nonparametric statistical testing of EEG- and</span>
+0020 <span class="comment">%   MEG-data.&quot; J Neurosci Methods (2007)</span>
+0021 <span class="comment">%   The modification is that all null t-statistics are considered instead</span>
+0022 <span class="comment">%   of the highest value. An important point to make is that the p-values</span>
+0023 <span class="comment">%   are now subject to multiple-comparisons, so holm-bonferroni test should</span>
+0024 <span class="comment">%   be done on the p-value outputs.</span>
+0025 
+0026 <span class="comment">% initialize</span>
+0027 iterations = size(nullMatrix,3);
+0028 tDist = [];
+0029 
+0030 <span class="comment">% make null-hypothesis cluster statistic distribution</span>
+0031 <span class="keyword">for</span> iter = 1:iterations
+0032     <span class="comment">% get the data</span>
+0033     null_t = squeeze(nullMatrix(:,:,iter));
+0034     
+0035     <span class="comment">% make clusters</span>
+0036     [null_cluster_stat,~] = mouse.stat.clusterStatistic(null_t,tThrMatrix);
+0037     tDist = [tDist null_cluster_stat];
+0038 <span class="keyword">end</span>
+0039 <span class="comment">% find whether clusters of original data' p-value and t-value</span>
+0040 
+0041 
+0042 <span class="comment">% time to test!</span>
+0043 <span class="comment">% make clusters</span>
+0044 t = testMatrix;
+0045 [cluster_t,cluster_loc] = mouse.stat.clusterStatistic(t,tThrMatrix);
+0046 cluster_p = nan(1,numel(cluster_t));
+0047 <span class="keyword">for</span> i=1:numel(cluster_t)
+0048     cluster_p(i) = (sum(tDist&gt;=abs(cluster_t(i)))+1)./(numel(tDist)+1); <span class="comment">% where is the cluster statistic in the distribution</span>
+0049 <span class="keyword">end</span>
+0050 significant = <a href="holmBonf.html" class="code" title="function reject = holmBonf(p,varargin)">holmBonf</a>(cluster_p);
+0051 <span class="keyword">end</span>
+0052</pre></div>
+<hr><address>Generated on Fri 28-Dec-2018 21:42:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of transformHb</title>
+  <meta name="keywords" content="transformHb">
+  <meta name="description" content="Inputs:">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">BauerLab</a> &gt; <a href="#">MATLAB</a> &gt; <a href="#">lib</a> &gt; <a href="#">+mouse</a> &gt; <a href="index.html">+expSpecific</a> &gt; transformHb.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for BauerLab\MATLAB\lib\+mouse\+expSpecific&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>transformHb
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>Inputs:</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>function xform_datahb = transformHb(datahb, I) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Inputs:
+   datahb = 4D matrix. 1st dim is y, 2nd dim is x, 3rd dim is species, 4th
+   dim is time.
+   I = mask data</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function xform_datahb = transformHb(datahb, I)</a>
+0002 
+0003 <span class="comment">% Inputs:</span>
+0004 <span class="comment">%   datahb = 4D matrix. 1st dim is y, 2nd dim is x, 3rd dim is species, 4th</span>
+0005 <span class="comment">%   dim is time.</span>
+0006 <span class="comment">%   I = mask data</span>
+0007 
+0008 <span class="comment">% (c) 2009 Washington University in St. Louis</span>
+0009 <span class="comment">% All Right Reserved</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+0012 <span class="comment">% You may not use this file except in compliance with the License.</span>
+0013 <span class="comment">% A copy of the License is available is with the distribution and can also</span>
+0014 <span class="comment">% be found at:</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% http://www.apache.org/licenses/LICENSE-2.0</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">% THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS</span>
+0019 <span class="comment">% IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,</span>
+0020 <span class="comment">% THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR</span>
+0021 <span class="comment">% PURPOSE, OR THAT THE USE OF THE SOFTWARD WILL NOT INFRINGE ANY PATENT</span>
+0022 <span class="comment">% COPYRIGHT, TRADEMARK, OR OTHER PROPRIETARY RIGHTS ARE DISCLAIMED. IN NO</span>
+0023 <span class="comment">% EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY</span>
+0024 <span class="comment">% DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL</span>
+0025 <span class="comment">% DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS</span>
+0026 <span class="comment">% OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)</span>
+0027 <span class="comment">% HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,</span>
+0028 <span class="comment">% STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN</span>
+0029 <span class="comment">% ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE</span>
+0030 <span class="comment">% POSSIBILITY OF SUCH DAMAGE.</span>
+0031 
+0032 [~, ~, hem, T]=size(datahb);
+0033 xform_datahb = nan(size(datahb));
+0034 <span class="keyword">for</span> h=1:hem
+0035     <span class="keyword">for</span> m=1:T
+0036         xform_datahb(:,:,h,m)=Affine(I, datahb(:,:,h,m));
+0037     <span class="keyword">end</span>
+0038 <span class="keyword">end</span>
+0039 xform_datahb=real(xform_datahb);
+0040 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Fri 28-Dec-2018 21:42:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

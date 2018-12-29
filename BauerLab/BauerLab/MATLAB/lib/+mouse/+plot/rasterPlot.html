@@ -1,0 +1,93 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of rasterPlot</title>
+  <meta name="keywords" content="rasterPlot">
+  <meta name="description" content="rasterPlot plot multiple time series in a column">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">BauerLab</a> &gt; <a href="#">MATLAB</a> &gt; <a href="#">lib</a> &gt; <a href="#">+mouse</a> &gt; <a href="index.html">+plot</a> &gt; rasterPlot.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for BauerLab\MATLAB\lib\+mouse\+plot&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>rasterPlot
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>rasterPlot plot multiple time series in a column</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>function axes = rasterPlot( data,points,winLen,winNum, axes ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">rasterPlot plot multiple time series in a column
+   Inputs:
+       data = time series
+       points = indices of where the red points should be
+       winLen = number of data points per window
+       winNum = number of windows
+       axes = Axes object that this is plotted on
+   Outputs:
+       axes = Axes object on which the plot is present</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function axes = rasterPlot( data,points,winLen,winNum, axes )</a>
+0002 <span class="comment">%rasterPlot plot multiple time series in a column</span>
+0003 <span class="comment">%   Inputs:</span>
+0004 <span class="comment">%       data = time series</span>
+0005 <span class="comment">%       points = indices of where the red points should be</span>
+0006 <span class="comment">%       winLen = number of data points per window</span>
+0007 <span class="comment">%       winNum = number of windows</span>
+0008 <span class="comment">%       axes = Axes object that this is plotted on</span>
+0009 <span class="comment">%   Outputs:</span>
+0010 <span class="comment">%       axes = Axes object on which the plot is present</span>
+0011 
+0012 winHeight = 1/(winNum + (winNum-1)*0.3); <span class="comment">% average height of a window</span>
+0013 winY = ones(1,winNum);
+0014 winY = winY - (0.3:winNum-0.3)*winHeight - (0:winNum-1)*winHeight*0.3;
+0015 
+0016 winStart = 1:winLen:winLen*(winNum-1)+1;
+0017 winEnd = winLen:winLen:winLen*winNum;
+0018 
+0019 <span class="comment">% change data to better fit the height of window</span>
+0020 data = data(winStart(1):winEnd(end));
+0021 data = data - mean(data); <span class="comment">% zero-mean</span>
+0022 data = data./range(data).*winHeight;
+0023 
+0024 t = 0:winLen - 1;
+0025 <span class="keyword">for</span> winInd = 1:winNum
+0026     plotData = data(winStart(winInd):winEnd(winInd));
+0027     plotData = plotData + winY(winInd);
+0028     plotPoints = points(points &gt;= winStart(winInd) &amp; points &lt;= winEnd(winInd));
+0029     plotPoints = plotPoints - winStart(winInd) + 1;
+0030     plot(t,plotData,<span class="string">'k'</span>);
+0031     xlim([min(t) max(t)]);
+0032     hold on;
+0033     plot(t(plotPoints),plotData(plotPoints),<span class="string">'ro'</span>,<span class="string">'LineWidth'</span>,1.5);
+0034 <span class="keyword">end</span>
+0035 hold off;
+0036 ylim([-winHeight*0.3 1+winHeight*0.3]);
+0037 <span class="keyword">end</span>
+0038</pre></div>
+<hr><address>Generated on Fri 28-Dec-2018 21:42:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

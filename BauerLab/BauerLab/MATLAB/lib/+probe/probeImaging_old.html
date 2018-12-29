@@ -1,0 +1,241 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of probeImaging_old</title>
+  <meta name="keywords" content="probeImaging_old">
+  <meta name="description" content="probeImaging Processes tiff file to output hemoglobin data, gcamp, and">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">BauerLab</a> &gt; <a href="#">MATLAB</a> &gt; <a href="#">lib</a> &gt; <a href="index.html">+probe</a> &gt; probeImaging_old.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for BauerLab\MATLAB\lib\+probe&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>probeImaging_old
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>probeImaging Processes tiff file to output hemoglobin data, gcamp, and</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function [raw, time, xform_hb, xform_probe, xform_probeCorr, isbrain, xform_isbrain, markers]= probeImaging(tiffFileName, systemInfo, sessionInfo, varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">probeImaging Processes tiff file to output hemoglobin data, gcamp, and
+corrected gcamp data
+   Input:
+       tiffFileName = tiff file name. A string array. Should include the
+       directory as well. If multiple string is given, then the function
+       assumes that second file is a continuation of first file.
+       systemInfo = information about the imaging system used, such as
+       which channels are rgb, and which LED files to use
+       sessionInfo = information about the session, including sampling
+       rate of data and lowpass highpass filtering options.
+       mask (optional) = brain mask, logical array. If mask isn't given, then a GUI
+       opens that user interacts with to make the mask. (needs to be
+       provided with markers)
+       markers (optional) = brain markers (needs to be provided with
+       isbrain)
+       darkTime (parameter) = seconds at beginning that is dark
+       ledDir (parameter) = directory of where the led spectrum text files are
+       extCoeffDir (parameter) = directory of where hb extinction coefficients are
+   Output:
+       xform_hb
+       xform_probe
+       xform_probeCorr
+       isbrain
+       xform_isbrain
+       markers
+   Example:
+       [raw, time, xform_hb, xform_gcamp, xform_gcampCorr, isbrain, xform_isbrain, markers] ...
+           = gcampImaging(tiffFileName, systemInfo, sessionInfo, 'ledDir', &quot;C:\Repositories\GitHub\BauerLab\MATLAB\parameters\+bauerParams\ledSpectra&quot;)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [raw, time, xform_hb, xform_probe, xform_probeCorr, isbrain, xform_isbrain, markers] </a><span class="keyword">...</span>
+0002     = probeImaging(tiffFileName, systemInfo, sessionInfo, varargin)
+0003 <span class="comment">%probeImaging Processes tiff file to output hemoglobin data, gcamp, and</span>
+0004 <span class="comment">%corrected gcamp data</span>
+0005 <span class="comment">%   Input:</span>
+0006 <span class="comment">%       tiffFileName = tiff file name. A string array. Should include the</span>
+0007 <span class="comment">%       directory as well. If multiple string is given, then the function</span>
+0008 <span class="comment">%       assumes that second file is a continuation of first file.</span>
+0009 <span class="comment">%       systemInfo = information about the imaging system used, such as</span>
+0010 <span class="comment">%       which channels are rgb, and which LED files to use</span>
+0011 <span class="comment">%       sessionInfo = information about the session, including sampling</span>
+0012 <span class="comment">%       rate of data and lowpass highpass filtering options.</span>
+0013 <span class="comment">%       mask (optional) = brain mask, logical array. If mask isn't given, then a GUI</span>
+0014 <span class="comment">%       opens that user interacts with to make the mask. (needs to be</span>
+0015 <span class="comment">%       provided with markers)</span>
+0016 <span class="comment">%       markers (optional) = brain markers (needs to be provided with</span>
+0017 <span class="comment">%       isbrain)</span>
+0018 <span class="comment">%       darkTime (parameter) = seconds at beginning that is dark</span>
+0019 <span class="comment">%       ledDir (parameter) = directory of where the led spectrum text files are</span>
+0020 <span class="comment">%       extCoeffDir (parameter) = directory of where hb extinction coefficients are</span>
+0021 <span class="comment">%   Output:</span>
+0022 <span class="comment">%       xform_hb</span>
+0023 <span class="comment">%       xform_probe</span>
+0024 <span class="comment">%       xform_probeCorr</span>
+0025 <span class="comment">%       isbrain</span>
+0026 <span class="comment">%       xform_isbrain</span>
+0027 <span class="comment">%       markers</span>
+0028 <span class="comment">%   Example:</span>
+0029 <span class="comment">%       [raw, time, xform_hb, xform_gcamp, xform_gcampCorr, isbrain, xform_isbrain, markers] ...</span>
+0030 <span class="comment">%           = gcampImaging(tiffFileName, systemInfo, sessionInfo, 'ledDir', &quot;C:\Repositories\GitHub\BauerLab\MATLAB\parameters\+bauerParams\ledSpectra&quot;)</span>
+0031 
+0032 <span class="keyword">if</span> ~isstring(tiffFileName)
+0033     error(<span class="string">'Input tiff file names have to be string array'</span>);
+0034 <span class="keyword">end</span>
+0035 
+0036 p = inputParser;
+0037 pkgDir = what(<span class="string">'bauerParams'</span>);
+0038 addParameter(p,<span class="string">'ledDir'</span>,string(fullfile(pkgDir.path,<span class="string">'ledSpectra'</span>)),@isstring);
+0039 addParameter(p,<span class="string">'extCoeffDir'</span>,string(pkgDir.path),@isstring);
+0040 addParameter(p,<span class="string">'darkTime'</span>,0,@isnumeric);
+0041 addOptional(p,<span class="string">'mask'</span>,[],@islogical);
+0042 addOptional(p,<span class="string">'markers'</span>,[],@isstruct);
+0043 parse(p,varargin{:});
+0044 
+0045 <span class="keyword">if</span> isempty(p.Results.mask)
+0046     getMask = true;
+0047 <span class="keyword">else</span>
+0048     getMask = false;
+0049     isbrain = p.Results.mask;
+0050     markers = p.Results.markers;
+0051 <span class="keyword">end</span>
+0052 
+0053 ledDir = p.Results.ledDir;
+0054 extCoeffDir = p.Results.extCoeffDir;
+0055 darkTime = p.Results.darkTime;
+0056 
+0057 <span class="comment">% gcamp specific parameters</span>
+0058 speciesNum = systemInfo.numLEDs;
+0059 hbSpecies = 2:4; <span class="comment">% which LED channels are for hemoglobin?</span>
+0060 probeSpecies = 1; <span class="comment">% which LED channels are for gcamp?</span>
+0061 blueWavelength = 454; <span class="comment">% nm</span>
+0062 greenWavelength = 512; <span class="comment">% nm</span>
+0063 bluePath = 5.6E-4; <span class="comment">% m</span>
+0064 greenPath = 5.7E-4; <span class="comment">% m</span>
+0065 
+0066 extCoeffFile = fullfile(extCoeffDir,&quot;prahl_extinct_coef.txt&quot;);
+0067 
+0068 <span class="comment">%% load tif file and convert it to mat file</span>
+0069 
+0070 disp(<span class="string">'load tif file'</span>);
+0071 
+0072 freqIn = sessionInfo.framerate; <span class="comment">% sampling rate</span>
+0073 freqOut = sessionInfo.freqout;
+0074 
+0075 <span class="keyword">if</span> freqOut == freqIn
+0076     raw = mouse.preprocess.loadTiffRawMultiple(tiffFileName,speciesNum);
+0077     time = 0:size(raw,4) - 1;
+0078     time = time./freqIn;
+0079     
+0080 <span class="keyword">else</span>
+0081     disp([<span class="string">'  downsample from '</span> num2str(freqIn) <span class="string">' Hz to '</span> num2str(freqOut) <span class="string">' Hz'</span>]);
+0082     
+0083     [time,raw] = mouse.preprocess.loadTiffResample(tiffFileName,speciesNum,freqIn,freqOut);
+0084 <span class="keyword">end</span>
+0085 
+0086 fs = freqOut;
+0087 
+0088 <span class="comment">% get rid of first frame since it is usually nonsensical</span>
+0089 raw(:,:,:,1) = [];
+0090 time(1) = [];
+0091 time = time - darkTime;
+0092 
+0093 <span class="comment">%% remove dark frames as baseline</span>
+0094 
+0095 darkTimeInd = time &lt;= 0;
+0096 darkFrames = raw(:,:,:,darkTimeInd);
+0097 <span class="keyword">if</span> numel(darkFrames) &gt; 0
+0098     darkFrame = nanmean(darkFrames,4);
+0099     
+0100     <span class="comment">% subtract darkframe from rest of the data</span>
+0101     raw = raw - repmat(darkFrame,1,1,1,size(raw,4));
+0102 <span class="keyword">end</span>
+0103 raw(:,:,:,darkTimeInd) = [];
+0104 time(darkTimeInd) = [];
+0105 
+0106 <span class="comment">%% make mask</span>
+0107 
+0108 <span class="keyword">if</span> getMask <span class="comment">% only if the mask has to be gotten</span>
+0109     rgbInd = systemInfo.rgb;
+0110     WL = squeeze(raw(:,:,rgbInd,1)); <span class="comment">% makes nxnx3 array for white light image</span>
+0111     WL(:,:,1) = WL(:,:,1)./max(max(WL(:,:,1)));
+0112     WL(:,:,2) = WL(:,:,2)./max(max(WL(:,:,2)));
+0113     WL(:,:,3) = WL(:,:,3)./max(max(WL(:,:,3)));
+0114     
+0115     <span class="comment">% get landmarks and save mask file</span>
+0116     [isbrain, markers] = mouse.expSpecific.getLandMarksandMask(WL);
+0117 <span class="keyword">end</span>
+0118 isbrain = logical(isbrain);
+0119 
+0120 <span class="comment">%% process raw</span>
+0121 
+0122 raw = probe.procRaw(raw);
+0123 
+0124 <span class="comment">%% get hemoglobin data</span>
+0125 
+0126 disp(<span class="string">'get hemoglobin data'</span>);
+0127 
+0128 <span class="keyword">for</span> ind = 1:numel(systemInfo.LEDFiles)
+0129     systemInfo.LEDFiles(ind) = fullfile(ledDir,systemInfo.LEDFiles(ind));
+0130 <span class="keyword">end</span>
+0131 
+0132 highpassFreq = sessionInfo.highpass;
+0133 lowpassFreq = sessionInfo.lowpass;
+0134 bandpassFreq = [highpassFreq lowpassFreq];
+0135 
+0136 [hbData, ~, ~]= <span class="keyword">...</span>
+0137     mouse.preprocess.procOIS(raw(:,:,hbSpecies,:), fs, bandpassFreq, <span class="keyword">...</span>
+0138     systemInfo.LEDFiles(hbSpecies), extCoeffFile, isbrain);
+0139 <span class="comment">% hbData is in unit of mole/L</span>
+0140 
+0141 xform_hb = mouse.expSpecific.transformHb(hbData, markers);
+0142 
+0143 <span class="comment">%% get gcamp data</span>
+0144 
+0145 disp(<span class="string">'get gcamp data'</span>);
+0146 
+0147 probeData = raw(:,:,probeSpecies,:);
+0148 probeData = probe.procFluor(probeData,fs,lowpassFreq);
+0149 xform_probe = mouse.expSpecific.transformHb(probeData, markers);
+0150 
+0151 <span class="comment">%% correct gcamp for hemoglobin</span>
+0152 
+0153 [lambda, extCoeff] = mouse.expSpecific.getHbExtCoeff(extCoeffFile);
+0154 
+0155 blueLambdaInd = find(lambda == blueWavelength);
+0156 greenLambdaInd = find(lambda == greenWavelength);
+0157 
+0158 hbOAbsCoeff = extCoeff([blueLambdaInd greenLambdaInd],1);
+0159 hbRAbsCoeff = extCoeff([blueLambdaInd greenLambdaInd],2);
+0160 
+0161 xform_probeCorr = mouse.physics.correctHb(xform_probe,xform_hb,<span class="keyword">...</span>
+0162     hbOAbsCoeff,hbRAbsCoeff,bluePath,greenPath);
+0163 
+0164 xform_isbrain = mouse.expSpecific.transformHb(isbrain, markers);
+0165 
+0166 <span class="keyword">end</span>
+0167</pre></div>
+<hr><address>Generated on Fri 28-Dec-2018 21:42:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>
