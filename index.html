@@ -51,28 +51,50 @@ if (year) year.textContent = String(new Date().getFullYear());
       <figure class="hero-figure">
         <div class="figure-topline"><span>Research focus / 01</span><span class="figure-dot" aria-hidden="true"></span></div>
         <svg class="signal-art" viewBox="0 0 540 500" role="img" aria-labelledby="art-title art-desc">
-          <title id="art-title">An illustration of optical sensing and brain connectivity</title>
-          <desc id="art-desc">A conceptual network of connected points within a circular sensing field, with incoming light paths and an illustrative signal trace below. This is an illustration, not research data.</desc>
+          <title id="art-title">Opening a window into the brain and mind</title>
+          <desc id="art-desc">A conceptual human profile contains a connected brain network. Optical sensing, electrical recording, and imaging offer complementary windows into brain activity. Below, measurements connect through models to questions about perception, memory, and intention. This illustrates a research direction, not demonstrated thought decoding.</desc>
           <defs>
-            <pattern id="dots" width="18" height="18" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r=".7" fill="#a9b2aa" opacity=".45"/></pattern>
-            <radialGradient id="halo"><stop offset="0" stop-color="#ced9c6" stop-opacity=".7"/><stop offset="1" stop-color="#e9eae0" stop-opacity="0"/></radialGradient>
+            <pattern id="mind-dots" width="18" height="18" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r=".65" fill="#a9b2aa" opacity=".36"/></pattern>
+            <radialGradient id="mind-halo"><stop offset="0" stop-color="#c6d5bd" stop-opacity=".7"/><stop offset="1" stop-color="#e9ece2" stop-opacity="0"/></radialGradient>
+            <marker id="mind-arrow" viewBox="0 0 6 6" refX="5" refY="3" markerWidth="5" markerHeight="5" orient="auto"><path d="M1 1L5 3L1 5" fill="none" stroke="#7a8978" stroke-width="1"/></marker>
           </defs>
-          <rect x="0" y="0" width="540" height="500" fill="url(#dots)"/>
-          <circle cx="274" cy="233" r="204" fill="url(#halo)"/>
+          <rect width="540" height="500" fill="url(#mind-dots)"/>
+          <circle cx="279" cy="212" r="177" fill="url(#mind-halo)"/>
           <g fill="none" stroke="#263e35">
-            <circle cx="274" cy="233" r="166" stroke-opacity=".18"/><circle cx="274" cy="233" r="142" stroke-dasharray="2 7" stroke-opacity=".32"/>
-            <ellipse cx="274" cy="233" rx="100" ry="166" stroke-opacity=".16" transform="rotate(-35 274 233)"/>
-            <ellipse cx="274" cy="233" rx="100" ry="166" stroke-opacity=".16" transform="rotate(35 274 233)"/>
-            <path d="M135 173L208 134L297 110L365 165L407 230L374 308L297 355L212 325L146 264Z M135 173L248 207L297 110 M208 134L248 207L365 165 M248 207L407 230L292 270L374 308 M248 207L292 270L212 325L146 264L248 207 M292 270L297 355 M212 325L248 207 M365 165L292 270" stroke-opacity=".36"/>
+            <circle cx="274" cy="216" r="146" stroke-opacity=".13" stroke-dasharray="2 7"/>
+            <path d="M202 374L205 324C172 305 157 274 156 238C153 202 157 165 178 137C203 105 239 93 277 95C319 97 350 113 365 144C377 167 376 188 377 204L397 236Q400 244 388 247L377 250L377 274Q375 290 358 291L330 291L330 374" fill="#f5f3ec" fill-opacity=".55" stroke="#526c59" stroke-width="1.7"/>
+            <path d="M181 210C170 198 173 180 184 172C181 158 194 145 207 145C211 129 229 121 243 128C256 116 273 121 281 131C299 126 314 135 317 148C335 146 350 159 348 174C362 185 357 202 345 209C343 225 326 234 313 229C304 243 286 244 274 234C259 246 243 239 235 230C221 236 206 228 204 217C194 221 185 218 181 210Z" fill="#dce5d3" stroke-opacity=".64" stroke-width="1.35"/>
+            <g stroke-opacity=".35" stroke-width="1.1"><path d="M207 145C224 147 224 163 213 171C200 180 207 193 218 194M243 128C237 145 247 154 258 151C272 149 278 160 273 172M281 131C281 144 292 150 303 146M317 148C305 159 311 172 325 172C337 172 338 183 332 190M184 172C194 170 203 178 197 188M235 230C230 219 241 209 252 215C263 221 274 215 273 204M313 229C307 216 316 207 327 211M274 234C284 221 281 213 291 205M218 194C227 188 236 193 237 202M258 151C251 168 258 179 270 183"/></g>
+            <path d="M235 188L268 167L307 186L295 216L259 211L235 188L219 165 M268 167L259 211M307 186L329 164M259 211L228 218M268 167L286 145" stroke="#526c59" stroke-opacity=".52" stroke-width="1.2"/>
           </g>
-          <g stroke="#b46342" fill="none" stroke-width="1.5"><path d="M39 93L135 173L292 270L450 357" stroke-dasharray="5 5"/><path d="M66 73L208 134L248 207L457 314" stroke-opacity=".55"/></g>
-          <g fill="#263e35"><circle cx="135" cy="173" r="5"/><circle cx="208" cy="134" r="6"/><circle cx="297" cy="110" r="4"/><circle cx="365" cy="165" r="6"/><circle cx="407" cy="230" r="4"/><circle cx="374" cy="308" r="5"/><circle cx="297" cy="355" r="4"/><circle cx="212" cy="325" r="6"/><circle cx="146" cy="264" r="4"/><circle cx="248" cy="207" r="8"/><circle cx="292" cy="270" r="7"/></g>
-          <g fill="#b46342"><circle cx="39" cy="93" r="5"/><circle cx="66" cy="73" r="4"/><circle cx="450" cy="357" r="5"/><circle cx="457" cy="314" r="4"/></g>
-          <g fill="#59675d" font-family="monospace" font-size="10"><text x="21" y="52">LIGHT IN</text><text x="409" y="385">SIGNAL OUT</text><text x="17" y="460">CBF</text></g>
-          <path d="M57 452H505" stroke="#263e35" stroke-opacity=".15" fill="none"/>
-          <path class="signal-line" d="M58 452L84 452Q91 451 96 437Q104 416 111 450Q116 463 124 452L155 452Q163 451 168 437Q176 419 183 450Q189 462 196 452L229 452Q237 450 242 434Q250 413 257 449Q263 465 270 452L305 452Q313 450 318 436Q326 417 333 450Q338 463 346 452L380 452Q388 450 393 434Q401 415 408 450Q414 463 421 452L457 452Q465 450 470 436Q478 418 485 450Q491 461 503 452" stroke="#b46342" stroke-width="1.7" fill="none"/>
+          <g fill="#3e5945"><circle cx="219" cy="165" r="3"/><circle cx="268" cy="167" r="4"/><circle cx="307" cy="186" r="4"/><circle cx="259" cy="211" r="4"/><circle cx="295" cy="216" r="3"/><circle cx="228" cy="218" r="3"/><circle cx="329" cy="164" r="3"/><circle cx="286" cy="145" r="3"/></g>
+          <circle cx="235" cy="188" r="12" fill="#b46342" fill-opacity=".11"/><circle cx="235" cy="188" r="4" fill="#b46342"/>
+          <g fill="none" stroke-width="1.2">
+            <path d="M112 109L166 109L208 153" stroke="#b46342"/><path d="M125 115L168 115L216 168" stroke="#b46342" stroke-opacity=".45" stroke-dasharray="3 4"/>
+            <path d="M420 117L369 117L326 150" stroke="#526c59"/>
+            <path d="M127 300L159 300L187 263" stroke="#77898a"/>
+          </g>
+          <g font-family="'DM Sans',Arial,sans-serif" font-size="11" letter-spacing=".3">
+            <text x="33" y="73" fill="#a95535">Optical</text><text x="33" y="88" fill="#a95535">sensing</text>
+            <text x="409" y="73" fill="#3e5945">Electrical</text><text x="409" y="88" fill="#3e5945">recording</text>
+            <text x="33" y="340" fill="#596f70">Imaging</text>
+          </g>
+          <g fill="none" stroke-width="1.3" stroke-linecap="round">
+            <g stroke="#b46342"><path d="M35 108H46M50 108H72M76 108H89"/><path d="M95 102L104 108L95 114"/></g>
+            <path d="M411 108H421L426 97L433 119L440 102L445 108H462" stroke="#526c59"/>
+            <g stroke="#77898a"><ellipse cx="76" cy="301" rx="28" ry="15"/><ellipse cx="76" cy="301" rx="17" ry="15"/><path d="M48 301H104"/></g>
+          </g>
+          <path d="M269 299V394" stroke="#8c9b83" stroke-opacity=".6" stroke-dasharray="3 5" fill="none"/>
+          <g font-family="'DM Sans',Arial,sans-serif" text-anchor="middle">
+            <text x="270" y="415" fill="#263e35" font-size="15">A window into the mind</text>
+            <text x="270" y="438" fill="#687169" font-size="10.5" letter-spacing=".4">Perception · Memory · Intention</text>
+          </g>
+          <g font-family="'DM Sans',Arial,sans-serif" font-size="10" fill="#59675d" text-anchor="middle" letter-spacing=".5">
+            <text x="103" y="479">MEASUREMENTS</text><text x="274" y="479">MODELS</text><text x="437" y="479">COGNITION</text>
+          </g>
+          <g fill="none" stroke="#7a8978" stroke-opacity=".65" marker-end="url(#mind-arrow)"><path d="M167 475H224"/><path d="M318 475H378"/></g>
         </svg>
-        <figcaption><strong>Making brain physiology measurable.</strong><span>Biomedical optics &amp; cerebral blood flow</span><small>Conceptual illustration</small></figcaption>
+        <figcaption><strong>Accessing the brain. Understanding the mind.</strong><span>Complementary measurements, connected through models</span><small>Conceptual research direction</small></figcaption>
       </figure>
       <div class="hero-foot"><span>PhD, Biomedical Engineering</span><span>MD candidate · Expected 2027</span><a href="#about">A little more about me <span aria-hidden="true">↓</span></a></div>
     </section>
